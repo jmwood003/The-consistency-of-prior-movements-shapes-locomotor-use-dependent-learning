@@ -6,7 +6,11 @@ close all; clear all; clc;
 
 %Set the number of bins, bootstraps, initials
 nbins = 5; 
+<<<<<<< Updated upstream
 nboot = 10000; 
+=======
+nboot = 100; 
+>>>>>>> Stashed changes
 num_initials = 5;
 
 %Set directory and load data

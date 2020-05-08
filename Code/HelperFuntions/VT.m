@@ -10,6 +10,10 @@ for i = 1:N
         randtrgt = normrnd(Tmu,t_sigma);
         targetsVar = [targetsVar, ones(1,numrep)*randtrgt];
     end
+<<<<<<< Updated upstream
+=======
+%     T = [zeros(1,250) targetsVar(1:LrnStrides-20) ones(1,20)*22 zeros(1,750)];
+>>>>>>> Stashed changes
     T = [zeros(1,250) targetsVar(1:LrnStrides) zeros(1,750)];
     T_Var = [T_Var; T];
 end

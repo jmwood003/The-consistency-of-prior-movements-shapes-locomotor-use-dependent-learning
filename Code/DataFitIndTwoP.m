@@ -1,4 +1,5 @@
-function DataFitTwopBoot
+function DataFitIndTwoP
+
 
 %Fit two process model to data from prior study
 
@@ -6,11 +7,6 @@ close all; clear all; clc;
 
 %Set the number of bins, bootstraps, initials
 nbins = 5; 
-<<<<<<< Updated upstream
-nboot = 10000; 
-=======
-nboot = 1000; 
->>>>>>> Stashed changes
 num_initials = 5;
 
 %Set directory and load data
@@ -47,10 +43,7 @@ for i = 1:length(Target_bin)
     end
 end
 
-%Bootstrap
-Data_btstrp = bootstrp(nboot,@mean,Data_bin);
-
-for Subj_i = 1:size(Data_btstrp,1)
+for Subj_i = 1:size(Data_bin,1)
     
     Subj_i
     
@@ -62,7 +55,7 @@ for Subj_i = 1:size(Data_btstrp,1)
         
     for initials_i = 1:num_initials
 
-        [params,error,AIC] = TpFit(Data_btstrp(Subj_i,:),Target_bin);
+        [params,error,AIC] = TpFit(Data_bin(Subj_i,:),Target_bin);
         
         % Save the best fitting parameters
         best_err = Inf;
@@ -70,7 +63,7 @@ for Subj_i = 1:size(Data_btstrp,1)
             best_err = error;
             bestparam = params;
             SSr = error;
-            SSt = sum((Data_btstrp(Subj_i,:) - mean(Data_btstrp(Subj_i,:))).^2);
+            SSt = sum((Data_bin(Subj_i,:) - mean(Data_bin(Subj_i,:))).^2);
             r2 = 1 - (SSr/SSt);
         end
 
@@ -90,7 +83,7 @@ for Subj_i = 1:size(Data_btstrp,1)
 end
 
 %Simulate the experiment for plotting
-for i = 1:size(Data_btstrp,1)
+for i = 1:size(Data_bin,1)
     sims_plot(i,:) = TwopSim(best_parameters(i,:),Target_bin);
 end
 
@@ -104,32 +97,19 @@ A_mean = nanmean(best_parameters(:,2));
 E_mean = nanmean(best_parameters(:,3));
 F_mean = nanmean(best_parameters(:,4));
 
-%Obtain 95% confidence intervals for the parameters
-%Set the index
-LowerIdx = round((nboot/100)*2.5);
-UpperIdx = round((nboot/100)*97.5);
-%Index the CI for each parameter
-C_sorted = sort(best_parameters(:,1));
-C_LB = C_sorted(LowerIdx); C_UB = C_sorted(UpperIdx);
-C_CIs = [C_sorted(LowerIdx) C_sorted(UpperIdx)];
-A_sorted = sort(best_parameters(:,2));
-A_LB = A_sorted(LowerIdx); A_UB = A_sorted(UpperIdx);
-A_CIs = [A_sorted(LowerIdx) A_sorted(UpperIdx)];
-E_sorted = sort(best_parameters(:,3));
-E_LB = E_sorted(LowerIdx); E_UB = E_sorted(UpperIdx); 
-E_CIs = [E_sorted(LowerIdx) E_sorted(UpperIdx)];
-F_sorted = sort(best_parameters(:,4));
-F_LB = F_sorted(LowerIdx); F_UB = F_sorted(UpperIdx);
-F_CIs = [F_sorted(LowerIdx) F_sorted(UpperIdx)];
+C_std = nanstd(best_parameters(:,1));
+A_std = nanstd(best_parameters(:,2));
+E_std = nanstd(best_parameters(:,3));
+F_std = nanstd(best_parameters(:,4));
 
 means = [C_mean A_mean E_mean F_mean];
-LBs = [C_LB A_LB E_LB F_LB];
-UBs = [C_UB A_UB E_UB F_UB];
+stds = [C_std A_std E_std F_std];
+
 
 %Plot the parameters and confidence intervals 
 figure; hold on
 for i = 1:length(means)
-    errorbar(i,means(i),means(i)-LBs(i),UBs(i)-means(i),'rx','MarkerSize',10,'LineWidth',1);
+    errorbar(i,means(i),stds(i),'rx','MarkerSize',10,'LineWidth',1);
     text(i+0.1,means(i),num2str(means(i)));
 end
 ylim([-0.1 1.1]);
@@ -143,7 +123,7 @@ ax.XTickLabelRotation = 45;
 %Plot mean model and bootstrapped data
 figure; hold on
 shadedErrorBar(1:size(sims_plot,2),nanmean(sims_plot),nanstd(sims_plot),'lineProps','k-','transparent',1);
-shadedErrorBar(1:size(Data_btstrp,2),mean(Data_btstrp),std(Data_btstrp),'lineProps','r','transparent',1);
+shadedErrorBar(1:size(Data_bin,2),mean(Data_bin),std(Data_bin),'lineProps','r','transparent',1);
 plot(1:length(Target_bin),Target_bin,'k--');
 plot(1:length(Target_bin),zeros(1,length(Target_bin)),'k');
 ylabel('Step Asymmetry Index');
@@ -154,7 +134,6 @@ title('Two Process Model Fit');
 %Plot correlation between parameters
 corrplot(best_parameters,'varNames',{'C','A','E','F'});
 
-save('ParamsTwop','best_parameters','r2_param_boot','aic_param_boot');
-
+save('IndParamsTwop','best_parameters','r2_param_boot','aic_param_boot');
 
 end
