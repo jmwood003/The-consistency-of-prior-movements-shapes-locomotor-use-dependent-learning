@@ -11,9 +11,9 @@ Tmu = 22;
 rng('shuffle','twister');
 
 %Number of bootstraps per condition
-nboot = 1000;
+nboot = 1;
 %Number of strides to account for in the rate calculation
-numstr = 50;
+numstr = 750;
 
 %Set paths
 directory = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code';
@@ -32,12 +32,12 @@ load('IndParamsTwop.mat');
 IndTwopParams = best_parameters;
 
 %Bootstrap
-Betas = bootstrp(nboot,@mean,IndBysParams(1,:));
-SigmaLs = bootstrp(nboot,@mean,IndBysParams(2,:));
-Cs = bootstrp(nboot,@mean,IndTwopParams(1,:));
-As = bootstrp(nboot,@mean,IndTwopParams(2,:));
-Es = bootstrp(nboot,@mean,IndTwopParams(3,:));
-Fs = bootstrp(nboot,@mean,IndTwopParams(4,:));
+Betas = bootstrp(nboot,@mean,IndBysParams(:,1));
+SigmaLs = bootstrp(nboot,@mean,IndBysParams(:,2));
+Cs = bootstrp(nboot,@mean,IndTwopParams(:,1));
+As = bootstrp(nboot,@mean,IndTwopParams(:,2));
+Es = bootstrp(nboot,@mean,IndTwopParams(:,3));
+Fs = bootstrp(nboot,@mean,IndTwopParams(:,4));
 
 for i = 1:nboot
     
