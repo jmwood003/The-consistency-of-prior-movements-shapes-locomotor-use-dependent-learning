@@ -54,7 +54,7 @@ errorbar(3,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),nanstd(RateRegress(TMA
 plot(1:3,[nanmean(RateRegress(TMAP(Sidx,wshidx),numstr)),nanmean(RateRegress(TMAP(Vidx,wshidx),numstr)),nanmean(RateRegress(TMAP(Uidx,wshidx),numstr))],'k-');
 ylim([0 1]);
 title('Bayes Model Washout Rate');
-ylabel('Forget Rate');
+ylabel('Retention Rate');
 xlabel('Conditions');
 ax = gca;
 ax.XTick = [1:3];
@@ -71,7 +71,7 @@ errorbar(3,nanmean(RateRegress(X(Uidx,wshidx),numstr)),nanstd(RateRegress(X(Uidx
 plot(1:3,[nanmean(RateRegress(X(Sidx,wshidx),numstr)),nanmean(RateRegress(X(Vidx,wshidx),numstr)),nanmean(RateRegress(X(Uidx,wshidx),numstr))],'k-');
 ylim([0 1]);
 title('TwoP Model Washout Rate');
-ylabel('Forget Rate');
+ylabel('Retention Rate');
 xlabel('Conditions');
 ax = gca;
 ax.XTick = [1:3];

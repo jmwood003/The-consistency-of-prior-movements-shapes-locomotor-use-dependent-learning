@@ -11,7 +11,7 @@ Tmu = 22;
 rng('shuffle','twister');
 
 %Number of bootstraps per condition
-nboot = 1;
+nboot = 100;
 %Number of strides to account for in the rate calculation
 numstr = 750;
 
