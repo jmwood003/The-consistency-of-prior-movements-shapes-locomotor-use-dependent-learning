@@ -9,7 +9,6 @@ clear all; close all; clc;
 reprng = [1 5];
 LrnStrides = 500;
 Tmu = 22;
-Conditions = {'All', 'Stable', 'Variable', 'Uniform'};
 
 %Number of simulations per condition
 N = 1000;
@@ -26,79 +25,54 @@ addpath(simdir);
 addpath(directory);
 
 %Set the targets
-t = [ST(LrnStrides,Tmu,N); VT(LrnStrides,Tmu,reprng,N); UT(LrnStrides,reprng,N)];
-%Indexing variables
-Sidx = 1:N;
-Vidx = N+1:N*2;
-Uidx = N*2+1:N*3;
+t = [RT(LrnStrides,Tmu,N); FT(LrnStrides,Tmu,reprng,N); UT(LrnStrides,reprng,N)];
 
 %Initialze confusion matrices
-CMall = zeros(2);
-CMbys = zeros(2);
-CM2p = zeros(2);
+CMallaic = zeros(2);
+CMABaic = zeros(2);
+CMSUaic = zeros(2);
+
+CMallbic = zeros(2);
+CMABbic = zeros(2);
+CMSUbic = zeros(2);
 
 for i = 1:N*3
 
     i
     
-    %Simulate Bayes Model
-    ParamsB = [rand, 0+(25-0).*rand];
-    [T_map] = BayesSim(ParamsB,t(i,:)); 
+    %Simulate Adaptive Bayes Model
+    ParamsAB = [rand, 0+(100-0).*rand];
+    [T_map] = ABsim(ParamsAB,t(i,:)); 
     %Fit
-    [BEST,iBest,AIC] = FitAll(T_map,t(i,:));
-    BEST = BEST/sum(BEST);
-    CMall(1,:) = CMall(1,:)+BEST;
-    CMbys(i,:) = BEST; 
+    [BESTaic,BESTbic] = FitAll(T_map,t(i,:));
+    BESTaic = BESTaic/sum(BESTaic);
+    CMallaic(1,:) = CMallaic(1,:)+BESTaic;
+    CMABaic(i,:) = BESTaic; 
+    BESTbic = BESTbic/sum(BESTbic);
+    CMallbic(1,:) = CMallbic(1,:)+BESTbic;
+    CMABbic(i,:) = BESTbic; 
 
-    %Simulate Two Process Model
-    ParamsT = [rand(1,3), 0+(0.2-0).*rand];
-    [x,W,S] = TwopSim(ParamsT,t); 
+    %Simulate Strategy + UDP Model
+    C = rand(1);
+    F = 0+((C/5)-0)*rand;
+    ParamsT = [C, rand(1,2), F];
+    [x,~,~] = SUsim(ParamsT,t); 
     %Fit
-    [BEST,iBest,AIC] = FitAll(x,t(i,:));
-    BEST = BEST/sum(BEST);
-    CMall(2,:) = CMall(2,:)+BEST;
-    CM2p(i,:) = BEST;
+    [BESTaic,BESTbic] = FitAll(x,t(i,:));
+    BESTaic = BESTaic/sum(BESTaic);
+    CMallaic(2,:) = CMallaic(2,:)+BESTaic;
+    CMSUaic(i,:) = BESTaic;
+    BESTbic = BESTbic/sum(BESTbic);
+    CMallbic(2,:) = CMallbic(2,:)+BESTbic;
+    CMSUbic(i,:) = BESTbic; 
 
 end
 
-%Create Final CMs for each condition
-FM(1).all = round(100*CMall/sum(CMall(1,:)))/100;
-%Stable
-CMs = [sum(CMbys(Sidx,:)); sum(CM2p(Sidx,:))];
-FM(2).all = round(100*CMs/sum(CMs(1,:)))/100;
-%Variable
-CMv = [sum(CMbys(Vidx,:)); sum(CM2p(Vidx,:))];
-FM(3).all = round(100*CMv/sum(CMv(1,:)))/100;
-%Uniform
-CMu = [sum(CMbys(Uidx,:)); sum(CM2p(Uidx,:))];
-FM(4).all = round(100*CMu/sum(CMu(1,:)))/100;
-FM(1).all = round(100*CMall/sum(CMall(1,:)),3)/100;
-%Stable
-CMs = [sum(CMbys(Sidx,:)); sum(CM2p(Sidx,:))];
-FM(2).all = round(100*CMs/sum(CMs(1,:)),3)/100;
-%Variable
-CMv = [sum(CMbys(Vidx,:)); sum(CM2p(Vidx,:))];
-FM(3).all = round(100*CMv/sum(CMv(1,:)),3)/100;
-%Uniform
-CMu = [sum(CMbys(Uidx,:)); sum(CM2p(Uidx,:))];
-FM(4).all = round(100*CMu/sum(CMu(1,:)),3)/100;
+%-----------------AIC----------------------
+FMaic = CMplot(CMallaic,CMABaic,CMSUaic,N,'AIC');
+%-----------------BIC----------------------
+FMbic = CMplot(CMallbic,CMABbic,CMSUbic,N,'BIC');
 
-%Plot all Confusion Matrices
-clims = [0.3 1];
-for i = 1:4
-    subplot(2,2,i), imagesc(FM(i).all,clims);
-    text(1,1,num2str(FM(i).all(1,1)),'FontSize',15);
-    text(2,1,num2str(FM(i).all(1,2)),'FontSize',15);
-    text(0.75,2,num2str(FM(i).all(2,1)),'FontSize',15);
-    text(1.75,2,num2str(FM(i).all(2,2)),'FontSize',15);
-    set(gca, 'xtick', [1:2], 'ytick', [1:2], 'fontsize', 10, ...
-        'tickdir', 'out','xaxislocation', 'top');
-    set(gca,'xticklabel',{'AB', 'S+U'});
-    set(gca,'yticklabel',{'AB', 'S+U'});
-    xlabel('Fitted Model');
-    ylabel('Simulated Model');
-    title(Conditions{i});
-end
 
 
 end

@@ -11,17 +11,19 @@ Tmu = 22;
 rng('shuffle','twister');
 
 %Number of bootstraps per condition
-nboot = 100;
+nboot = 1000;
 %Number of strides to account for in the rate calculation
-numstr = 750;
+numstr = 50;
 
-%Set paths
+%Set directory and load data
+datadir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Data';
 directory = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code';
 helpdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\HelperFuntions';
 simdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\SimFunctions';
-datadir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Data';
+plotdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\PlottingFunctions';
 addpath(helpdir);
 addpath(simdir);
+addpath(plotdir);
 addpath(directory);
 cd(datadir);
 
@@ -44,8 +46,8 @@ for i = 1:nboot
     i
     
     %Set the target
-    tS = ST(LrnStrides,Tmu,1);
-    tV = VT(LrnStrides,Tmu,reprng,1); 
+    tR = RT(LrnStrides,Tmu,1);
+    tF = FT(LrnStrides,Tmu,reprng,1); 
     tU = UT(LrnStrides,reprng,1);
     
     %Set the parameters
@@ -53,34 +55,30 @@ for i = 1:nboot
     pT = [Cs(i), As(i), Es(i), Fs(i)];
 
     %Simulate
-    %Stable
-    [T_map] = BayesSim(pB,tS);
-    [x,~,~] = TwopSim(pT,tS);
-    TMAPs(i,:) = T_map;
-    Xs(i,:) = x;  
-    %Variable
-    [T_map] = BayesSim(pB,tV);
-    [x,~,~] = TwopSim(pT,tV);
-    TMAPv(i,:) = T_map;
-    Xv(i,:) = x;  
+    %Repeated
+    [T_map] = ABsim(pB,tR);
+    [x,~,~] = SUsim(pT,tR);
+    TMAPr(i,:) = T_map;
+    Xr(i,:) = x;  
+    %5% sigma
+    [T_map] = ABsim(pB,tF);
+    [x,~,~] = SUsim(pT,tF);
+    TMAPf(i,:) = T_map;
+    Xf(i,:) = x;  
     %Uniform
-    [T_map] = BayesSim(pB,tU);
-    [x,~,~] = TwopSim(pT,tU);
+    [T_map] = ABsim(pB,tU);
+    [x,~,~] = SUsim(pT,tU);
     TMAPu(i,:) = T_map;
     Xu(i,:) = x;  
     
-    %Save params:
-    paramsB(i,:) = pB;
-    paramsT(i,:) = pT;
-    
 end
 
-TMAP = [TMAPs; TMAPv; TMAPu];
-X = [Xs; Xv; Xu];
+TMAP = [TMAPr; TMAPf; TMAPu];
+X = [Xr; Xf; Xu];
 
-[Varcomp, Unifcomp] = SimPlot(TMAP,X,numstr,nboot);
+[Fcomp, Unifcomp] = SimPlot(TMAP,X,numstr,nboot);
 
-VarcompPrct = (sum(Varcomp)/length(Varcomp))*100
+VarcompPrct = (sum(Fcomp)/length(Fcomp))*100
 UnifcompPrct = (sum(Unifcomp)/length(Unifcomp))*100
 
 
