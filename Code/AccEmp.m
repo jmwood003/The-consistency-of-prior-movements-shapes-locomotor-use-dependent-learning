@@ -25,8 +25,8 @@ disp(['Total SL Accuracy (m) = ' num2str(nanmean(Tacc(:,2)))]);
 %Regress Step lengths vs targets for the Uniform condition only.
 %Order: (1) All SL vs all targets, (2) RSL vs Rtrgt, (3) LSL vs Ltrgt
 D = TrgtvSL(T);
-corrplot(D.Uniform.Right,'varNames',{'TrgtRun','RSLun'});
-corrplot(D.Uniform.Left,'varNames',{'TrgtLun','LSLun'});
+[Rr, Rpval] = corrplot(D.Uniform.Right,'varNames',{'TrgtRun','RSLun'})
+[Lr, Lpval] = corrplot(D.Uniform.Left,'varNames',{'TrgtLun','LSLun'})
 
 %Plot mean and std SAI for the entire learning phase 
 [SAImean, SAIstd] = UDPVgrpLrn(T);
