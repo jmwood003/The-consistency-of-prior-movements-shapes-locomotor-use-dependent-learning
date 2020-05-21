@@ -37,5 +37,7 @@ for n = 1:size(t,2)-1
     
 end
 
+% Rates = RateRegress(x(752:1500),50);
+
 end
 

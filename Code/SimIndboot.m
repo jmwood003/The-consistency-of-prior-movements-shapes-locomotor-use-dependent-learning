@@ -29,17 +29,17 @@ cd(datadir);
 
 %Load individual parameters
 load('IndParamsBys.mat');
-IndBysParams = best_parameters;
+IndABParams = best_parameters;
 load('IndParamsTwop.mat');
-IndTwopParams = best_parameters;
+IndSUParams = best_parameters;
 
 %Bootstrap
-Betas = bootstrp(nboot,@mean,IndBysParams(:,1));
-SigmaLs = bootstrp(nboot,@mean,IndBysParams(:,2));
-Cs = bootstrp(nboot,@mean,IndTwopParams(:,1));
-As = bootstrp(nboot,@mean,IndTwopParams(:,2));
-Es = bootstrp(nboot,@mean,IndTwopParams(:,3));
-Fs = bootstrp(nboot,@mean,IndTwopParams(:,4));
+Betas = bootstrp(nboot,@mean,IndABParams(:,1));
+SigmaLs = bootstrp(nboot,@mean,IndABParams(:,2));
+Cs = bootstrp(nboot,@mean,IndSUParams(:,1));
+As = bootstrp(nboot,@mean,IndSUParams(:,2));
+Es = bootstrp(nboot,@mean,IndSUParams(:,3));
+Fs = bootstrp(nboot,@mean,IndSUParams(:,4));
 
 for i = 1:nboot
     

@@ -37,8 +37,10 @@ for c = 1:length(Conditions)
         LaccStrides.(currCond).(currSubj) = [Ltrgt, LSL];
         
         %Find accuracy (meters)
-        currRA = nanmean(sqrt((Rtrgt-RSL).^2));
-        currLA = nanmean(sqrt((Ltrgt-LSL).^2));
+%         currRA = nanmean(sqrt((Rtrgt-RSL).^2));
+%         currLA = nanmean(sqrt((Ltrgt-LSL).^2));
+        currRA = nanmean(abs(Rtrgt-RSL));
+        currLA = nanmean(abs(Ltrgt-LSL));
         Racc(s,c) = currRA;
         Lacc(s,c) = currLA;
         Tacc(s,c) = mean([currRA currLA]);

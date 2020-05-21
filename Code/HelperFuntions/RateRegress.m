@@ -24,7 +24,7 @@ end
 %remembered), 1- the slope is the amount forgotton.
 %So for 1-b, higher means faster forgetting, lower means slower forgetting
 
-
+% figure; hold on
 % plot(RateData(1,:));
 
 end
