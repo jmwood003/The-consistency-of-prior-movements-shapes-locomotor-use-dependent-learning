@@ -2,7 +2,7 @@ function SimIndboot
 
 %Simulate both models for the three conditions 
 
-% clear all; close all; clc;
+clear all; close all; clc;
 
 %Set experiment parameters:
 reprng = [1 5];
@@ -76,10 +76,10 @@ end
 TMAP = [TMAPr; TMAPf; TMAPu];
 X = [Xr; Xf; Xu];
 
-[Fcomp, Unifcomp] = SimPlot(TMAP,X,numstr,nboot);
+SimPlot(TMAP,X,numstr,nboot);
 
-VarcompPrct = (sum(Fcomp)/length(Fcomp))*100
-UnifcompPrct = (sum(Unifcomp)/length(Unifcomp))*100
+% VarcompPrct = (sum(Fcomp)/length(Fcomp))*100
+% UnifcompPrct = (sum(Unifcomp)/length(Unifcomp))*100
 
 
 end

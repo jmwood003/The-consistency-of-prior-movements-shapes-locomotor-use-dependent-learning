@@ -21,7 +21,7 @@ for n = 1:size(t,2)-1
 %     sigmaSq_post(n) = (prior_var(n)^-1 + sigma_L^-2);
     sigmaSq_post(n) = (prior_var(n)^-1 + sigma_L^-1)^-1;
 %     T_map(n+1) = (sigmaSq_post(n)^-1/prior_var(n))*mu_prior(n) + (sigmaSq_post(n)^-1/sigma_L^2)*t(n);
-    T_map(n+1) = (sigmaSq_post(n)/prior_var(n))*mu_prior(n) + (sigmaSq_post(n)/sigma_L)*t(n);
+    T_map(n) = (sigmaSq_post(n)/prior_var(n))*mu_prior(n) + (sigmaSq_post(n)/sigma_L)*t(n);
 end
 
 end
