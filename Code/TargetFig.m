@@ -27,7 +27,7 @@ T_Uniform = UT(LrnStrides,reprng,1);
 %Plot
 figure; hold on
 subplot(2,3,1); hold on
-histogram(T_Rep(251:750),'FaceColor','k','Normalization','probability');
+histogram(T_Rep(251:750),'FaceColor','k');
 xlim([0 45]);
 % ylim([0 500]);
 xlabel('SAI Target (%)','FontSize',10);
@@ -43,9 +43,9 @@ xlabel('Strides','FontSize',10);
 ylabel('SAI Target (%)','FontSize',10);
 
 subplot(2,3,2); hold on
-histogram(T_5sig(251:750),'FaceColor','b','Normalization','probability');
+histogram(T_5sig(251:750),15,'FaceColor','b');
 xlim([0 45]);
-ylim([0 1]);
+% ylim([0 1]);
 xlabel('SAI Target (%)','FontSize',10);
 % xlabel(['SAI Target (%; Mu = ',num2str(Var5mu), '; Sigma = ', num2str(Var5std), ')'],'FontSize',15);
 % ylabel('Frequency','FontSize',10);
@@ -60,9 +60,9 @@ xlabel('Strides','FontSize',10);
 % title('Variable Condition','FontSize',12);
 
 subplot(2,3,3); hold on
-histogram(T_Uniform(251:750),'FaceColor','r','Normalization','probability');
+histogram(T_Uniform(251:750),15,'FaceColor','r');
 xlim([0 45]);
-ylim([0 1]);
+% ylim([0 1]);
 xlabel('SAI Target (%)','FontSize',10);
 % xlabel(['SAI Target (%; Mu = ',num2str(Uniformmu), '; Sigma = ', num2str(Uniformstd), ')'],'FontSize',15);
 % ylabel('Frequency','FontSize',10);

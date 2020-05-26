@@ -1,8 +1,6 @@
-function D = TrgtvSL(T)
+function [D CorR CorL] = TrgtvSL(T)
 
 Conditions = unique(T.Condition);
-RSL_all = [];
-LSL_all = [];
         
 for c = 1:length(Conditions)
     
@@ -30,16 +28,20 @@ for c = 1:length(Conditions)
         RSL = [RSL; T.Right_step_length(Subjidx)];
         LSL = [LSL; T.Left_step_length(Subjidx)];
         
+        [Rr Pvalr] = corrplot([RSL,Rtrgt],'varNames',{'RSL','Trgt'});
+        [Rl Pvall] = corrplot([LSL,Ltrgt],'varNames',{'RSL','Trgt'});
+
+        D.(currCond).(currSubj).Right = [Rr, Pvalr];
+        D.(currCond).(currSubj).Left = [Rl, Pvall];
+        
+        if strcmp(currCond,'Uniform')==1
+            CorR(s,:) = [Rr(2,1) Pvalr(2,1)];
+            CorL(s,:) = [Rl(2,1) Pvall(2,1)];
+        end
+
     end
     
-    RSL_all = [RSL_all; Rtrgt, RSL];
-    LSL_all = [LSL_all; Ltrgt, LSL];
-    D.(currCond).Right = [Rtrgt, RSL];
-    D.(currCond).Left = [Ltrgt, LSL];
 
 end
-
-corrplot(RSL_all,'varNames',{'Rtrgt','RSL'});
-corrplot(LSL_all,'varNames',{'Ltrgt','LSL'});
 
 end
