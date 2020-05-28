@@ -11,7 +11,7 @@ Tmu = 22;
 rng('shuffle','twister');
 
 %Number of bootstraps per condition
-nboot = 1000;
+N = 1000;
 %Number of strides to account for in the rate calculation
 numstr = 50;
 
@@ -33,17 +33,17 @@ IndABParams = best_parameters;
 load('IndParamsTwop.mat');
 IndSUParams = best_parameters;
 
-%Bootstrap
-Betas = bootstrp(nboot,@mean,IndABParams(:,1));
-SigmaLs = bootstrp(nboot,@mean,IndABParams(:,2));
-Cs = bootstrp(nboot,@mean,IndSUParams(:,1));
-As = bootstrp(nboot,@mean,IndSUParams(:,2));
-Es = bootstrp(nboot,@mean,IndSUParams(:,3));
-Fs = bootstrp(nboot,@mean,IndSUParams(:,4));
-
-for i = 1:nboot
+for i = 1:N
     
     i
+    
+    %Bootstrap
+    [~, ABidx] = bootstrp(1,@mean,IndABParams);
+    [~, SUidx] = bootstrp(1,@mean,IndSUParams);
+%     [~, Cidx] = bootstrp(1,@mean,IndSUParams(:,1));
+%     [~, Aidx] = bootstrp(1,@mean,IndSUParams(:,2));
+%     [~, Eidx] = bootstrp(1,@mean,IndSUParams(:,3));
+%     [~, Fidx] = bootstrp(1,@mean,IndSUParams(:,4));
     
     %Set the target
     tR = RT(LrnStrides,Tmu,1);
@@ -51,32 +51,43 @@ for i = 1:nboot
     tU = UT(LrnStrides,reprng,1);
     
     %Set the parameters
-    pB = [Betas(i), SigmaLs(i)];
-    pT = [Cs(i), As(i), Es(i), Fs(i)];
-
-    %Simulate
-    %Repeated
-    [T_map] = ABsim(pB,tR);
-    [x,~,~] = SUsim(pT,tR);
-    TMAPr(i,:) = T_map;
-    Xr(i,:) = x;  
-    %5% sigma
-    [T_map] = ABsim(pB,tF);
-    [x,~,~] = SUsim(pT,tF);
-    TMAPf(i,:) = T_map;
-    Xf(i,:) = x;  
-    %Uniform
-    [T_map] = ABsim(pB,tU);
-    [x,~,~] = SUsim(pT,tU);
-    TMAPu(i,:) = T_map;
-    Xu(i,:) = x;  
+%     pB = [IndABParams(Bidx,1), IndABParams(Sidx,2)];
+%     pT = [IndSUParams(Cidx,1), IndSUParams(Aidx,2), IndSUParams(Eidx,3), IndSUParams(Fidx,4)];
+    pB = IndABParams(ABidx,:);
+    pT = IndSUParams(SUidx,:);
     
+    for j = 1:length(pB)
+        %Simulate
+        %Repeated
+        [T_map] = ABsim(pB(j,:),tR);
+        [x,~,~] = SUsim(pT(j,:),tR);
+        tmapr(j,:) = T_map;
+        xr(j,:) = x;  
+        %5% sigma
+        [T_map] = ABsim(pB(j,:),tF);
+        [x,~,~] = SUsim(pT(j,:),tF);
+        tmapf(j,:) = T_map;
+        xf(j,:) = x;  
+        %Uniform
+        [T_map] = ABsim(pB(j,:),tU);
+        [x,~,~] = SUsim(pT(j,:),tU);
+        tmapu(j,:) = T_map;
+        xu(j,:) = x;  
+    end
+
+    TMAPr(i,:) = nanmean(tmapr);
+    Xr(i,:) = nanmean(xr);  
+    TMAPf(i,:) = nanmean(tmapf);
+    Xf(i,:) = nanmean(xf);  
+    TMAPu(i,:) = nanmean(tmapu);
+    Xu(i,:) = nanmean(xu);  
+
 end
 
 TMAP = [TMAPr; TMAPf; TMAPu];
 X = [Xr; Xf; Xu];
 
-SimPlot(TMAP,X,numstr,nboot);
+SimPlot(TMAP,X,numstr,N);
 
 % VarcompPrct = (sum(Fcomp)/length(Fcomp))*100
 % UnifcompPrct = (sum(Unifcomp)/length(Unifcomp))*100

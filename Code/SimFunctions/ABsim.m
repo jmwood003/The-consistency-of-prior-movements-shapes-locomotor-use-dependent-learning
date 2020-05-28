@@ -10,7 +10,7 @@ prior_var = 1;
 T_map = 0; 
 
 %Loop through each target
-for n = 1:size(t,2)-1
+for n = 1:size(t,2)
     
     %Prior updates
     mu_prior(n+1) = (1 - Beta)*mu_prior(n) + Beta*t(n); 

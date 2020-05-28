@@ -13,7 +13,7 @@ PlatIdx = 722:751;
 %Plot 
 figure; hold on
 %Plot the stable condition
-subplot(3,3,1:2); hold on
+subplot(4,3,1:3); hold on
 shadedErrorBar(1:size(TMAP,2),nanmean(TMAP(Ridx,:),1),nanstd(TMAP(Ridx,:),0,1),'lineProps','-b');
 shadedErrorBar(1:size(X,2),nanmean(X(Ridx,:),1),nanstd(X(Ridx,:),0,1),'lineProps','-r');
 ylim([0 40]);
@@ -22,7 +22,7 @@ title('Repeated Condition');
 legend('Adaptive Bayes prediction','Strategy + UDP prediction','Location','northwest');
 legend('boxoff');
 %Create Inset of washout
-axes('Position',[.45 .8 .15 .1])
+axes('Position',[.6 .8 .2 .1])
 box on
 hold on
 shadedErrorBar(1:size(TMAP(wshidx),2),nanmean(TMAP(Ridx,wshidx),1),nanstd(TMAP(Ridx,wshidx),0,1),'lineProps','-b');
@@ -34,7 +34,7 @@ xlim([0 50]);
 % set(gca,'XTickLabel',[]);
 
 %Plot the uniform condition
-subplot(3,3,4:5); hold on
+subplot(4,3,4:6); hold on
 shadedErrorBar(1:size(TMAP,2),nanmean(TMAP(Fidx,:),1),nanstd(TMAP(Fidx,:),0,1),'lineProps','-b');
 shadedErrorBar(1:size(X,2),nanmean(X(Fidx,:),1),nanstd(X(Fidx,:),0,1),'lineProps','-r');
 ylim([0 40]);
@@ -43,7 +43,7 @@ title('5% \sigma Condition');
 % legend('Bayes Prediction','Two process prediction');
 % legend('boxoff');
 %Create Inset of washout
-axes('Position',[.45 .5 .15 .1])
+axes('Position',[.6 .59 .2 .1])
 box on
 hold on
 shadedErrorBar(1:size(TMAP(wshidx),2),nanmean(TMAP(Fidx,wshidx),1),nanstd(TMAP(Fidx,wshidx),0,1),'lineProps','-b');
@@ -55,17 +55,17 @@ xlim([0 50]);
 % set(gca,'XTickLabel',[]);
 
 %Plot the uniform condition
-subplot(3,3,7:8); hold on
+subplot(4,3,7:9); hold on
 shadedErrorBar(1:size(TMAP,2),nanmean(TMAP(Uidx,:),1),nanstd(TMAP(Uidx,:),0,1),'lineProps','-b');
 shadedErrorBar(1:size(X,2),nanmean(X(Uidx,:),1),nanstd(X(Uidx,:),0,1),'lineProps','-r');
 ylim([0 40]);
-xlabel('Washout Strides')
+xlabel('Strides')
 ylabel('Step Asymmetry (%)');
 title('Uniform Condition');
 % legend('Bayes Prediction','Two process prediction');
 % legend('boxoff');
 %Create Inset of washout
-axes('Position',[.45 .2 .15 .1])
+axes('Position',[.6 .37 .2 .1])
 box on
 hold on
 shadedErrorBar(1:size(TMAP(wshidx),2),nanmean(TMAP(Uidx,wshidx),1),nanstd(TMAP(Uidx,wshidx),0,1),'lineProps','-b');
@@ -112,7 +112,7 @@ xlim([0 50]);
 % ax.XTickLabel = {'R','5% \sigma','U'};
 
 %plot learning plateau
-subplot(3,3,3); hold on
+subplot(4,3,10); hold on
 plot(1,nanmean(nanmean(TMAP(Ridx,PlatIdx),1)),'bo');
 errorbar(1,nanmean(nanmean(TMAP(Ridx,PlatIdx),1)),nanstd(nanmean(TMAP(Ridx,PlatIdx),1)),'b');
 plot(1.1,nanmean(nanmean(X(Ridx,PlatIdx),1)),'ro');
@@ -135,7 +135,7 @@ ylabel('SAI (%)');
 xlabel('Conditions');
 
 %plot aftereffects
-subplot(3,3,6); hold on
+subplot(4,3,11); hold on
 plot(1,nanmean(nanmean(TMAP(Ridx,AEidxI),1)),'bo');
 errorbar(1,nanmean(nanmean(TMAP(Ridx,AEidxI),1)),nanstd(nanmean(TMAP(Ridx,AEidxI),1)),'b');
 plot(1.1,nanmean(nanmean(X(Ridx,AEidxI),1)),'ro');
@@ -153,12 +153,12 @@ ylim([0 10]);
 ax = gca;
 ax.XTick = [1:3];
 ax.XTickLabel = {'R','5% \sigma','U'};
-title('Initial AE');
+title('Initial Bias');
 ylabel('SAI (%)');
 xlabel('Conditions');
 
 %plot aftereffects
-subplot(3,3,9); hold on
+subplot(4,3,12); hold on
 plot(1,nanmean(nanmean(TMAP(Ridx,AEidxE),1)),'bo');
 errorbar(1,nanmean(nanmean(TMAP(Ridx,AEidxE),1)),nanstd(nanmean(TMAP(Ridx,AEidxE),1)),'b');
 plot(1.1,nanmean(nanmean(X(Ridx,AEidxE),1)),'ro');
@@ -176,7 +176,7 @@ ylim([0 10]);
 ax = gca;
 ax.XTick = [1:3];
 ax.XTickLabel = {'R','5% \sigma','U'};
-title('Early AE');
+title('Early Washout');
 ylabel('SAI (%)');
 xlabel('Conditions');
 % 
