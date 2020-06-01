@@ -76,30 +76,32 @@ xlim([0 50]);
 % set(gca,'YTickLabel',[]);
 % set(gca,'XTickLabel',[]);
 
-% %Plot washout rates 
-% %Bayes model
-% subplot(3,3,3); hold on
-% bar(1,nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),'EdgeColor','b','FaceColor','w','LineWidth',2);
-% errorbar(1,nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),nanstd(RateRegress(TMAP(Ridx,wshidx),numstr)),'b');
-% bar(2,nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),'EdgeColor','b','FaceColor','w','LineWidth',2);
-% errorbar(2,nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),nanstd(RateRegress(TMAP(Fidx,wshidx),numstr)),'b');
-% bar(3,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),'EdgeColor','b','FaceColor','w','LineWidth',2);
-% errorbar(3,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),nanstd(RateRegress(TMAP(Uidx,wshidx),numstr)),'b');
+%Plot washout rates 
+%Bayes model
+subplot(4,3,10); hold on
+bar(1,nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),'EdgeColor','b','FaceColor','w','LineWidth',2);
+errorbar(1,nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),nanstd(RateRegress(TMAP(Ridx,wshidx),numstr)),'b');
+bar(2,nanmean(RateRegress(X(Ridx,wshidx),numstr)),'EdgeColor','r','FaceColor','w','LineWidth',2);
+errorbar(2,nanmean(RateRegress(X(Ridx,wshidx),numstr)),nanstd(RateRegress(X(Ridx,wshidx),numstr)),'r');
+bar(4,nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),'EdgeColor','b','FaceColor','w','LineWidth',2);
+errorbar(4,nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),nanstd(RateRegress(TMAP(Fidx,wshidx),numstr)),'b');
+bar(5,nanmean(RateRegress(X(Fidx,wshidx),numstr)),'EdgeColor','r','FaceColor','w','LineWidth',2);
+errorbar(5,nanmean(RateRegress(X(Fidx,wshidx),numstr)),nanstd(RateRegress(X(Fidx,wshidx),numstr)),'r');
+bar(7,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),'EdgeColor','b','FaceColor','w','LineWidth',2);
+errorbar(7,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),nanstd(RateRegress(TMAP(Uidx,wshidx),numstr)),'b');
+bar(8,nanmean(RateRegress(X(Uidx,wshidx),numstr)),'EdgeColor','r','FaceColor','w','LineWidth',2);
+errorbar(8,nanmean(RateRegress(X(Uidx,wshidx),numstr)),nanstd(RateRegress(X(Uidx,wshidx),numstr)),'r');
 % plot(1:3,[nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),nanmean(RateRegress(TMAP(Uidx,wshidx),numstr))],'k-');
-% ylim([0 1]);
-% title('Adaptive Bys');
-% ylabel('Retention Factor');
-% % xlabel('Conditions');
-% ax = gca;
-% ax.XTick = [1:3];
-% ax.XTickLabel = {'R','5% \sigma','U'};
-% 
+ylim([0 1]);
+title('Washout Rates');
+ylabel('Retention Factor');
+% xlabel('Conditions');
+ax = gca;
+ax.XTick = [1.5:8.5];
+ax.XTickLabel = {'R','','','5% \sigma','','','U','',''};
+
 % %Two process model
 % subplot(3,3,6); hold on
-% bar(1,nanmean(RateRegress(X(Ridx,wshidx),numstr)),'EdgeColor','r','FaceColor','w','LineWidth',2);
-% errorbar(1,nanmean(RateRegress(X(Ridx,wshidx),numstr)),nanstd(RateRegress(X(Ridx,wshidx),numstr)),'r');
-% bar(2,nanmean(RateRegress(X(Fidx,wshidx),numstr)),'EdgeColor','r','FaceColor','w','LineWidth',2);
-% errorbar(2,nanmean(RateRegress(X(Fidx,wshidx),numstr)),nanstd(RateRegress(X(Fidx,wshidx),numstr)),'r');
 % bar(3,nanmean(RateRegress(X(Uidx,wshidx),numstr)),'EdgeColor','r','FaceColor','w','LineWidth',2);
 % errorbar(3,nanmean(RateRegress(X(Uidx,wshidx),numstr)),nanstd(RateRegress(X(Uidx,wshidx),numstr)),'r');
 % plot(1:3,[nanmean(RateRegress(X(Ridx,wshidx),numstr)),nanmean(RateRegress(X(Fidx,wshidx),numstr)),nanmean(RateRegress(X(Uidx,wshidx),numstr))],'k-');
@@ -111,28 +113,28 @@ xlim([0 50]);
 % ax.XTick = [1:3];
 % ax.XTickLabel = {'R','5% \sigma','U'};
 
-%plot learning plateau
-subplot(4,3,10); hold on
-plot(1,nanmean(nanmean(TMAP(Ridx,PlatIdx),1)),'bo');
-errorbar(1,nanmean(nanmean(TMAP(Ridx,PlatIdx),1)),nanstd(nanmean(TMAP(Ridx,PlatIdx),1)),'b');
-plot(1.1,nanmean(nanmean(X(Ridx,PlatIdx),1)),'ro');
-errorbar(1.1,nanmean(nanmean(X(Ridx,PlatIdx),1)),nanstd(nanmean(X(Ridx,PlatIdx),1)),'r');
-plot(2,nanmean(nanmean(TMAP(Fidx,PlatIdx),1)),'bo');
-errorbar(2,nanmean(nanmean(TMAP(Fidx,PlatIdx),1)),nanstd(nanmean(TMAP(Fidx,PlatIdx),1)),'b');
-plot(2.1,nanmean(nanmean(X(Fidx,PlatIdx),1)),'ro');
-errorbar(2.1,nanmean(nanmean(X(Fidx,PlatIdx),1)),nanstd(nanmean(X(Fidx,PlatIdx),1)),'r');
-plot(3,nanmean(nanmean(TMAP(Uidx,PlatIdx),1)),'bo');
-errorbar(3,nanmean(nanmean(TMAP(Uidx,PlatIdx))),nanstd(nanmean(TMAP(Uidx,PlatIdx))),'b');
-plot(3.1,nanmean(nanmean(X(Uidx,PlatIdx),1)),'ro');
-errorbar(3.1,nanmean(nanmean(X(Uidx,PlatIdx))),nanstd(nanmean(X(Uidx,PlatIdx))),'r');
-xlim([0.5 3.5]);
-ylim([15 25]);
-ax = gca;
-ax.XTick = [1:3];
-ax.XTickLabel = {'R','5% \sigma','U'};
-title('Learning Palteau');
-ylabel('SAI (%)');
-xlabel('Conditions');
+% %plot learning plateau
+% subplot(4,3,10); hold on
+% plot(1,nanmean(nanmean(TMAP(Ridx,PlatIdx),1)),'bo');
+% errorbar(1,nanmean(nanmean(TMAP(Ridx,PlatIdx),1)),nanstd(nanmean(TMAP(Ridx,PlatIdx),1)),'b');
+% plot(1.1,nanmean(nanmean(X(Ridx,PlatIdx),1)),'ro');
+% errorbar(1.1,nanmean(nanmean(X(Ridx,PlatIdx),1)),nanstd(nanmean(X(Ridx,PlatIdx),1)),'r');
+% plot(2,nanmean(nanmean(TMAP(Fidx,PlatIdx),1)),'bo');
+% errorbar(2,nanmean(nanmean(TMAP(Fidx,PlatIdx),1)),nanstd(nanmean(TMAP(Fidx,PlatIdx),1)),'b');
+% plot(2.1,nanmean(nanmean(X(Fidx,PlatIdx),1)),'ro');
+% errorbar(2.1,nanmean(nanmean(X(Fidx,PlatIdx),1)),nanstd(nanmean(X(Fidx,PlatIdx),1)),'r');
+% plot(3,nanmean(nanmean(TMAP(Uidx,PlatIdx),1)),'bo');
+% errorbar(3,nanmean(nanmean(TMAP(Uidx,PlatIdx))),nanstd(nanmean(TMAP(Uidx,PlatIdx))),'b');
+% plot(3.1,nanmean(nanmean(X(Uidx,PlatIdx),1)),'ro');
+% errorbar(3.1,nanmean(nanmean(X(Uidx,PlatIdx))),nanstd(nanmean(X(Uidx,PlatIdx))),'r');
+% xlim([0.5 3.5]);
+% ylim([15 25]);
+% ax = gca;
+% ax.XTick = [1:3];
+% ax.XTickLabel = {'R','5% \sigma','U'};
+% title('Learning Palteau');
+% ylabel('SAI (%)');
+% xlabel('Conditions');
 
 %plot aftereffects
 subplot(4,3,11); hold on
