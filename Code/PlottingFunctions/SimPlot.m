@@ -79,22 +79,22 @@ xlim([0 50]);
 %Plot washout rates 
 %Bayes model
 subplot(4,3,10); hold on
-bar(1,nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),'EdgeColor','b','FaceColor','w','LineWidth',2);
+plot(1,nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),'bo');
 errorbar(1,nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),nanstd(RateRegress(TMAP(Ridx,wshidx),numstr)),'b');
-bar(2,nanmean(RateRegress(X(Ridx,wshidx),numstr)),'EdgeColor','r','FaceColor','w','LineWidth',2);
+plot(2,nanmean(RateRegress(X(Ridx,wshidx),numstr)),'ro');
 errorbar(2,nanmean(RateRegress(X(Ridx,wshidx),numstr)),nanstd(RateRegress(X(Ridx,wshidx),numstr)),'r');
-bar(4,nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),'EdgeColor','b','FaceColor','w','LineWidth',2);
+plot(4,nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),'bo');
 errorbar(4,nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),nanstd(RateRegress(TMAP(Fidx,wshidx),numstr)),'b');
-bar(5,nanmean(RateRegress(X(Fidx,wshidx),numstr)),'EdgeColor','r','FaceColor','w','LineWidth',2);
+plot(5,nanmean(RateRegress(X(Fidx,wshidx),numstr)),'ro');
 errorbar(5,nanmean(RateRegress(X(Fidx,wshidx),numstr)),nanstd(RateRegress(X(Fidx,wshidx),numstr)),'r');
-bar(7,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),'EdgeColor','b','FaceColor','w','LineWidth',2);
+plot(7,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),'bo');
 errorbar(7,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),nanstd(RateRegress(TMAP(Uidx,wshidx),numstr)),'b');
-bar(8,nanmean(RateRegress(X(Uidx,wshidx),numstr)),'EdgeColor','r','FaceColor','w','LineWidth',2);
+plot(8,nanmean(RateRegress(X(Uidx,wshidx),numstr)),'ro');
 errorbar(8,nanmean(RateRegress(X(Uidx,wshidx),numstr)),nanstd(RateRegress(X(Uidx,wshidx),numstr)),'r');
 % plot(1:3,[nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),nanmean(RateRegress(TMAP(Uidx,wshidx),numstr))],'k-');
 ylim([0 1]);
 title('Washout Rates');
-ylabel('Retention Factor');
+ylabel('Unlearning/stride');
 % xlabel('Conditions');
 ax = gca;
 ax.XTick = [1.5:8.5];

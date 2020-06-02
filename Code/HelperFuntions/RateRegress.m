@@ -8,7 +8,7 @@ for i=1:r
    X = [ones(length(y),1) , x(1:end-1)'];
    b = regress(y',X);
 
-   Rates(i) = b(2);
+   Rates(i) = 1-b(2);
 end
 % figure; hold on
 % plot(x(1:end-1),x(2:end),'k.');
