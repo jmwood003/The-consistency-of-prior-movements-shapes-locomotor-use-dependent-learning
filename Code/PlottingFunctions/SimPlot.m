@@ -92,7 +92,7 @@ errorbar(7,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),nanstd(RateRegress(TMA
 plot(8,nanmean(RateRegress(X(Uidx,wshidx),numstr)),'ro');
 errorbar(8,nanmean(RateRegress(X(Uidx,wshidx),numstr)),nanstd(RateRegress(X(Uidx,wshidx),numstr)),'r');
 % plot(1:3,[nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),nanmean(RateRegress(TMAP(Uidx,wshidx),numstr))],'k-');
-ylim([0 1]);
+% ylim([0 0.]);
 title('Washout Rates');
 ylabel('Unlearning/stride');
 % xlabel('Conditions');
