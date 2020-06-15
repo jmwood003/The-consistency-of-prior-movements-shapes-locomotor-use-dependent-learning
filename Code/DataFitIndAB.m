@@ -152,6 +152,8 @@ suptitle('Individual Fits Adaptive Bayes Model');
 %Plot correaltion between parameters
 corrplot(best_parameters,'varNames',{'Beta','SigL'});
 
+disp(['r2 = ' num2str(mean(r2_param)) ' +/- ' num2str(SEM(r2_param,1))]);
+
 save('IndParamsBys','best_parameters','r2_param','aic_param');
 
 end
