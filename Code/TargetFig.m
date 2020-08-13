@@ -3,7 +3,7 @@ function TargetFig
 %Plot the stride by stride targets and target distributions for the three
 %differen conditions
 
-close all; clear all; clc;
+% close all; clear all; clc;
 
 helpdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\HelperFuntions';
 addpath(helpdir);

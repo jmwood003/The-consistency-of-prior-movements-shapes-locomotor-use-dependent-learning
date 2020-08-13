@@ -1,4 +1,4 @@
-function DataFitTwopBoot
+function DataFitBootSU
 
 %Fit two process model to data from prior study
 
@@ -6,11 +6,7 @@ close all; clear all; clc;
 
 %Set the number of bins, bootstraps, initials
 nbins = 5; 
-<<<<<<< Updated upstream
-nboot = 10000; 
-=======
-nboot = 1000; 
->>>>>>> Stashed changes
+nboot = 100; 
 num_initials = 5;
 
 %Set directory and load data
@@ -18,9 +14,11 @@ datadir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Data';
 directory = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code';
 helpdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\HelperFuntions';
 simdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\SimFunctions';
+plotdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\PlottingFunctions';
 addpath(helpdir);
 addpath(simdir);
 addpath(directory);
+addpath(plotdir);
 cd(datadir);
 
 load('Data.mat','DRR_bslcor_data');
@@ -62,7 +60,7 @@ for Subj_i = 1:size(Data_btstrp,1)
         
     for initials_i = 1:num_initials
 
-        [params,error,AIC] = TpFit(Data_btstrp(Subj_i,:),Target_bin);
+        [params,error,AIC] = SUfit(Data_btstrp(Subj_i,:),Target_bin);
         
         % Save the best fitting parameters
         best_err = Inf;
@@ -91,7 +89,7 @@ end
 
 %Simulate the experiment for plotting
 for i = 1:size(Data_btstrp,1)
-    sims_plot(i,:) = TwopSim(best_parameters(i,:),Target_bin);
+    sims_plot(i,:) = SUsim(best_parameters(i,:),Target_bin);
 end
 
 %Calculate the mean r2

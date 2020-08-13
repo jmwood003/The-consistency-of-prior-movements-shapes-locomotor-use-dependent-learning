@@ -1,4 +1,4 @@
-function DataFitBysBoot
+function DataFitBootAB
 
 %Fit Bayes model to data from prior study
 

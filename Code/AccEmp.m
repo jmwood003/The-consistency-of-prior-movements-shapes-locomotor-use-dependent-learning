@@ -7,6 +7,8 @@ directory = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code';
 helpdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\HelperFuntions';
 simdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\SimFunctions';
 datadir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Data';
+pltdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\PlottingFunctions';
+addpath(pltdir);
 addpath(helpdir);
 addpath(simdir);
 addpath(directory);
@@ -35,5 +37,6 @@ maxpvalL = max(CorL(:,2))
 
 %Plot mean and std SAI for the entire learning phase 
 [SAImean, SAIstd] = UDPVgrpLrn(T);
+
 
 end

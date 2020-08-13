@@ -11,18 +11,20 @@ Tmu = 22;
 rng('shuffle','twister');
 
 %Number of simulations per condition
-N = 1;
+N = 100;
 
 %Set paths
 directory = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code';
 helpdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\HelperFuntions';
 simdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\SimFunctions';
+pltdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\PlottingFunctions';
 addpath(helpdir);
 addpath(simdir);
 addpath(directory);
+addpath(pltdir);
 
 %Number of strides to account for in the rate calculation
-numstr = 750;
+numstr = 50;
 
 %Set parameters
 paramsB = [];
@@ -33,8 +35,8 @@ for i = 1:N
     i
     
     %Set the target
-    tS = ST(LrnStrides,Tmu,1);
-    tV = VT(LrnStrides,Tmu,reprng,1); 
+    tS = RT(LrnStrides,Tmu,1);
+    tV = FT(LrnStrides,Tmu,reprng,1); 
     tU = UT(LrnStrides,reprng,1);
     
     %Set the parameters
@@ -49,18 +51,18 @@ for i = 1:N
 
     %Simulate
     %Stable
-    [T_map] = BayesSim(pB,tS);
-    [x,~,~] = TwopSim(pT,tS);
+    [T_map] = ABsim(pB,tS);
+    [x,~,~] = SUsim(pT,tS);
     TMAPs(i,:) = T_map;
     Xs(i,:) = x;  
     %Variable
-    [T_map] = BayesSim(pB,tV);
-    [x,~,~] = TwopSim(pT,tV);
+    [T_map] = ABsim(pB,tV);
+    [x,~,~] = SUsim(pT,tV);
     TMAPv(i,:) = T_map;
     Xv(i,:) = x;  
     %Uniform
-    [T_map] = BayesSim(pB,tU);
-    [x,~,~] = TwopSim(pT,tU);
+    [T_map] = ABsim(pB,tU);
+    [x,~,~] = SUsim(pT,tU);
     TMAPu(i,:) = T_map;
     Xu(i,:) = x;  
     
@@ -73,10 +75,11 @@ end
 TMAP = [TMAPs; TMAPv; TMAPu];
 X = [Xs; Xv; Xu];
 
-[Varcomp, Unifcomp] = SimPlot(TMAP,X,numstr,N);
+% [Varcomp, Unifcomp] = SimPlot(TMAP,X,numstr,N);
+SimPlot(TMAP,X,numstr,N);
 
-VarcompPrct = (sum(Varcomp)/length(Varcomp))*100
-UnifcompPrct = (sum(Unifcomp)/length(Unifcomp))*100
+% VarcompPrct = (sum(Varcomp)/length(Varcomp))*100
+% UnifcompPrct = (sum(Unifcomp)/length(Unifcomp))*100
 
 
 end
