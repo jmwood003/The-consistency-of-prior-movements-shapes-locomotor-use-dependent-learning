@@ -1,12 +1,13 @@
 function PilotDataFit
 
 %Fit two process model to data from prior study
+clear all;
+close all; clear; clc;
 
-close all; clear all; clc;
-
-num_initials = 5;
-IB = 1:10;
-EW = 11:30;
+num_initials = 20; %Start with 20 initials because even with 15 there is some inconsistency
+Bins = 3;
+IWsh = 5;
+EWsh = 6:30;
 
 %Set directory and load data
 datadir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Data';
@@ -26,15 +27,31 @@ cd(datadir);
 % 'VarTest_Unif_05'
 % 'VarTest_Unif_06'
 
-load('Pilotdata.mat')
-D = Pilot_data;
-T = Trgts*100;
+%Set up data for fitting (concenate individual subjects)
+dataidx = [1,2,4,5];
+load('PilotdataAll.mat')
+D = Pilot_data(dataidx,:);
+T = Trgts(dataidx,:)*100;
+P = phases;
+
+%Bin data
+Dbin = Bin(D,Bins,1,'mean');
+Tbin = Bin(T,Bins,1,'mean');
+Pbin = Bin(P,Bins,1,'mean');
+
+P01 = [Dbin(1,:), Dbin(3,:)]; T01 = [Tbin(1,:), Tbin(3,:)];
+P02 = [Dbin(2,:), Dbin(4,:)]; T02 = [Tbin(2,:), Tbin(4,:)];
+
+Data = [P01; P02];
+Targets = [T01; T02];
+Phases = [Pbin, Pbin];
 
 
-for Subj_i = 1:size(T,1)
-    
+%Fit the models to data
+for Subj_i = 1:size(Targets,1)
+
     Subj_i
-    
+
     %Pre-allocate space for error parameters and r2
     temp_best_errAB = [];     temp_best_errSU = [];
     temp_bestparamAB = [];    temp_bestparamSU = [];
@@ -43,24 +60,24 @@ for Subj_i = 1:size(T,1)
 
     for initials_i = 1:num_initials
 
-        [paramsAB,errorAB,AICab, ~] = ABfit(D(Subj_i,:),T(Subj_i,:));
-        [paramsSU,errorSU,AICsu] = SUfit(D(Subj_i,:),T(Subj_i,:));
-        
+        [paramsAB,errorAB,AICab, ~] = ABfit(Data(Subj_i,:),Targets(Subj_i,:));
+        [paramsSU,errorSU,AICsu] = SUfit(Data(Subj_i,:),Targets(Subj_i,:));
+
         % Save the best fitting parameters
         best_errAB = Inf;
         if errorAB <= best_errAB
             best_errAB = errorAB;
             bestparamAB = paramsAB;
             SSr = errorAB;
-            SSt = sum((D(Subj_i,:) - mean(D(Subj_i,:))).^2);
+            SSt = sum((Data(Subj_i,:) - mean(Data(Subj_i,:))).^2);
             r2AB = 1 - (SSr/SSt);
         end
-        
+
         temp_best_errAB(initials_i,:) = best_errAB;
         temp_bestparamAB(initials_i,:) = bestparamAB;
         temp_r2AB(initials_i,:) = r2AB;
         tempaicAB(initials_i,:) = AICab;
-        
+
         % Save the best fitting parameters
         best_errSU = Inf;
         if errorSU <= best_errSU
@@ -70,13 +87,13 @@ for Subj_i = 1:size(T,1)
             SSt = sum((D(Subj_i,:) - mean(D(Subj_i,:))).^2);
             r2SU = 1 - (SSr/SSt);
         end
-        
+
         temp_best_errSU(initials_i,:) = best_errSU;
         temp_bestparamSU(initials_i,:) = bestparamSU;
         temp_r2SU(initials_i,:) = r2SU;
         tempaicSU(initials_i,:) = AICsu;
-        
-        
+
+
     end
 
         [~,bestidxAB] = min(temp_best_errAB);
@@ -84,7 +101,7 @@ for Subj_i = 1:size(T,1)
         r2_paramAB(Subj_i,:) = temp_r2AB(bestidxAB,:);
         aic_paramAB(Subj_i,:) = tempaicAB(bestidxAB,:);
         best_sseAB(Subj_i,:) = min(temp_best_errAB);   
-        
+
         [~,bestidxSU] = min(temp_best_errSU);
         best_parametersSU(Subj_i,:) = temp_bestparamSU(bestidxSU,:);
         r2_paramSU(Subj_i,:) = temp_r2SU(bestidxSU,:);
@@ -92,87 +109,155 @@ for Subj_i = 1:size(T,1)
         best_sseSU(Subj_i,:) = min(temp_best_errSU);    
 end
 
-
 %Simulate the experiment for plotting
-for i = 1:size(D,1)
-    sims_plotAB(i,:) = ABsim(best_parametersAB(i,:),T(i,:));
-    sims_plotSU(i,:) = SUsim(best_parametersSU(i,:),T(i,:));
+for i = 1:size(Data,1)
+    sims_plotAB(i,:) = ABsim(best_parametersAB(i,:),Targets(i,:));
+    [sims_plotSUx(i,:),sims_plotSUw(i,:),sims_plotSUs(i,:) ] = ...
+        SUsim(best_parametersSU(i,:),Targets(i,:));
 end
+
+disp('AB params');
+disp(num2str(best_parametersAB));
+disp('SU params');
+disp(num2str(best_parametersSU));
 
 %Order of subjects
 % 'VarTest_Stable_05'
 % 'VarTest_Stable_06'
 % 'VarTest_Unif_05'
 % 'VarTest_Unif_06'
-titles = {'VarTest05 - Stable','VarTest06 - Stable','VarTest05 - Unif','VarTest06 - Unif'};
-pos = [1,2,5,6];
+
+%Set up plotting
+%Colors
+DataCs = cool(4);
+ModelCs = hot(6);
+
+titles = {'P05 (AB model fit)','P06 (AB model fit)',...
+    'P05 (SU model fit)','P06 (SU model fit)'};
+pltidx = [1,2,1,2];
+posstrti = [1,3,5,7]; posendi = [2,4,6,8];
+%Plot
 figure; 
-for p = 1:4
-    subplot(2,4,pos(p)); hold on
-    plot(1:length(D),D(p,:),'b.');
-%     plot(1:length(sims_plotAB),sims_plotAB(p,:),'r');
-%     plot(1:length(sims_plotSU),sims_plotSU(p,:),'m');
-    plot(1:length(D),zeros(1,length(D)),'k');
-%     plot(1:length(T),T(p,:),'k');
-    title(titles{p});
-    ylim([-5 45]); xlim([0 1250]);
-    if p == 1
-        legend('Data','AB model','SU model');
+for i = 1:length(pltidx)
+    subplot(3,4,posstrti(i):posendi(i)); hold on
+    plot(1:length(Data),Data(pltidx(i),:),'b.');
+    if i == 1 || i == 2
+        plot(1:length(sims_plotAB),sims_plotAB(pltidx(i),:),'Color',DataCs(3,:),'LineWidth',1.2);
+        plot(1:length(Targets),[Tbin(1,:),Tbin(1,:)],'k--');
+        text(length(Phases)-100,15,['r^2 = ' num2str(r2_paramAB(i))]);
+        text(length(Phases)-100,11,['AIC = ' num2str(aic_paramAB(i))]);
+        legend('Data', 'AB model (MAP)', 'Mean Target');
         legend('boxoff');
     end
-
+    if i == 3 || i ==4
+        plot(1:length(sims_plotSUx),sims_plotSUx(pltidx(i),:),'Color',ModelCs(2,:),'LineWidth',1.2);
+        plot(1:length(sims_plotSUw),sims_plotSUw(pltidx(i),:),'Color',ModelCs(1,:),'LineWidth',1.2);
+        plot(1:length(sims_plotSUs),sims_plotSUs(pltidx(i),:),'Color',ModelCs(3,:),'LineWidth',1.2);
+        plot(1:length(Targets),[Tbin(1,:),Tbin(1,:)],'k--');
+        text(length(Phases)-100,15,['r^2 = ' num2str(r2_paramSU(i-2))]);
+        text(length(Phases)-100,11,['AIC = ' num2str(aic_paramSU(i-2))]);
+        legend('Data', 'SU model (x)', 'SU (w)', 'SU (s)', 'Mean Target');
+        legend('boxoff');
+    end
+    ylim([-5 45]); 
+    line([length(Tbin) length(Tbin)],get(gca,'ylim'),'LineWidth',3,'Color','k')
+    title(titles{i});
+    text(length(Tbin)/5,42,'Consistent Condition');
+    text((length(Tbin)/5)+length(Tbin),42,'High Variability Condition');
+    ylabel('SAI (%)');
+    xlabel(['Strides (bins of ' num2str(Bins) ')']);
 end
 
-% wshidx = find(phases==3);
-% subplot(2,4,3); hold on
-% plot(1,mean(D(:,wshidx(IB))),'bo');
-% plot(2,mean(sims_plotAB(:,wshidx(IB))),'ro');
-% plot(3,mean(sims_plotSU(:,wshidx(IB))),'mo');
-% ylim([0 8]); xlim([0 4]);
 
+%Aftereffects (Here I am plotting binned aftereffects because the models
+%are fit to binned data)
+%Set up indexing:
+wshout = find(Phases==3);
+ConstIBi = wshout(1:IWsh);
+HVIBi = wshout((find(diff(wshout)>1)+1):(find(diff(wshout)>1)+IWsh));
+ConstEWi = wshout(EWsh);
+HVEWi = wshout((find(diff(wshout)>1)+EWsh(1)):(find(diff(wshout)>1)+EWsh(end)));
 
+%Initial Bias subject 1
+%Setup
+subj1IB = [nanmean(Data(1,ConstIBi),2), nanmean(Data(1,HVIBi),2)];
+ABs1IB = [nanmean(sims_plotAB(1,ConstIBi),2), nanmean(sims_plotAB(1,HVIBi),2)];
+SUs1IB = [nanmean(sims_plotSUx(1,ConstIBi),2), nanmean(sims_plotSUx(1,HVIBi),2)];
+%Plot
+subplot(3,4,9); hold on
+plot(subj1IB,'k-','MarkerEdgeColor','w','MarkerFaceColor','b','Marker','o','MarkerSize',10);
+plot(ABs1IB,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(3,:),'Marker','d','MarkerSize',10);
+plot(SUs1IB,'k-','MarkerEdgeColor','w','MarkerFaceColor',ModelCs(2,:),'Marker','d','MarkerSize',10);
+plot(0:4,zeros(1,5),'k');
+xlim([0 3]); ylim([-1 10]);
+ax = gca;
+ax.XTick = [1 2];
+ax.XTickLabel = {'Consistent','High Variability'};
+ylabel('SAI (%)');
+legend('PS2','AB','SU');
+legend('boxoff');
+title('P05 Initial Bias (strides 1:5)');
 
-% %Extracted and trim pilot data subjects then saved into an array so we dont
-% %need this anymore. 
-% load('UDPVT.mat')
-% T = UDPVT;
-% 
-% T(strcmp('VarTest_Unif_04',T.Subject_ID)==1,:) = [];
-% T(strcmp('orientation',T.Trial_name)==1,:) = [];
-% 
-% SID = unique(T.Subject_ID);
-% Trls = unique(T.Trial_name);
-% trllen = [];
-% for i = 1:length(SID)
-%     for j = 1:length(Trls)
-%         Ctrli = T.Baseline_corrected_SAI(strcmp(T.Trial_name,Trls{j})==1 & strcmp(SID{i},T.Subject_ID)==1);
-%         Ctrli(isnan(Ctrli)==1) = [];
-%         trllen(i,j) = length(Ctrli);     
-%     end
-% end
-% 
-% mintrls = min(trllen,[],1);
-% phases = [ones(1,mintrls(1)), ones(1,mintrls(2))*2, ones(1,mintrls(3))*3];
-% 
-% Pilot_data = [];
-% Trgts = [];
-% for i = 1:length(SID)
-%     CsubjSAI = [];
-%     CsubjTrgt = [];
-%     for j = 1:length(Trls)
-%         Ctrl = T.Baseline_corrected_SAI(strcmp(T.Trial_name,Trls{j})==1 & strcmp(SID{i},T.Subject_ID)==1);
-%         Ctrl(isnan(Ctrl)==1) = [];
-%         CsubjSAI = [CsubjSAI, Ctrl(1:mintrls(j))'];
-%         
-%         trgt = T.Trgt(strcmp(T.Trial_name,Trls{j})==1 & strcmp(SID{i},T.Subject_ID)==1);
-%         trgt(isnan(trgt)==1) = [];
-%         CsubjTrgt = [CsubjTrgt, trgt(1:mintrls(j))'];
-%     end
-%     
-%     Pilot_data = [Pilot_data; CsubjSAI];
-%     Trgts = [Trgts; CsubjTrgt];
-% 
-% end
-% save('Pilotdata.mat','Pilot_data','Trgts','phases');
+%Initial bias subject 2
+%Setup
+subj2IB = [nanmean(Data(2,ConstIBi),2), nanmean(Data(2,HVIBi),2)];
+ABs2IB = [nanmean(sims_plotAB(2,ConstIBi),2), nanmean(sims_plotAB(2,HVIBi),2)];
+SUs2IB = [nanmean(sims_plotSUx(2,ConstIBi),2), nanmean(sims_plotSUx(2,HVIBi),2)];
+%Plot
+subplot(3,4,11); hold on
+plot(subj2IB,'k-','MarkerEdgeColor','w','MarkerFaceColor','b','Marker','o','MarkerSize',10);
+plot(ABs2IB,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(3,:),'Marker','d','MarkerSize',10);
+plot(SUs2IB,'k-','MarkerEdgeColor','w','MarkerFaceColor',ModelCs(2,:),'Marker','d','MarkerSize',10);
+plot(0:4,zeros(1,5),'k');
+xlim([0 3]); ylim([-1 10]);
+ax = gca;
+ax.XTick = [1 2];
+ax.XTickLabel = {'Consistent','High Variability'};
+legend('PS2','AB','SU');
+legend('boxoff');
+ylabel('SAI (%)');
+title('P06 Initial Bias (strides 1:5)');
+
+%Early Washout Subject 1
+%Setup
+subj1EW = [nanmean(Data(1,ConstEWi),2), nanmean(Data(1,HVEWi),2)];
+ABs1EW = [nanmean(sims_plotAB(1,ConstEWi),2), nanmean(sims_plotAB(1,HVEWi),2)];
+SUs1EW = [nanmean(sims_plotSUx(1,ConstEWi),2), nanmean(sims_plotSUx(1,HVEWi),2)];
+%Plot
+subplot(3,4,10); hold on
+plot(subj1EW,'k-','MarkerEdgeColor','w','MarkerFaceColor','b','Marker','o','MarkerSize',10);
+plot(ABs1EW,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(3,:),'Marker','d','MarkerSize',10);
+plot(SUs1EW,'k-','MarkerEdgeColor','w','MarkerFaceColor',ModelCs(2,:),'Marker','d','MarkerSize',10);
+plot(0:4,zeros(1,5),'k');
+xlim([0 3]); ylim([-1 10]);
+ax = gca;
+ax.XTick = [1 2];
+ax.XTickLabel = {'Consistent','High Variability'};
+legend('P05','AB','SU');
+legend('boxoff');
+xlabel('Condition');
+title('P05 Early Washout (strides 6:30)');
+ylabel('SAI (%)');
+
+%Early Washout Subject 2
+subj2EW = [nanmean(Data(2,ConstEWi),2), nanmean(Data(2,HVEWi),2)];
+ABs2EW = [nanmean(sims_plotAB(2,ConstEWi),2), nanmean(sims_plotAB(2,HVEWi),2)];
+SUs2EW = [nanmean(sims_plotSUx(2,ConstEWi),2), nanmean(sims_plotSUx(2,HVEWi),2)];
+%Plot
+subplot(3,4,12); hold on
+plot(subj2EW,'k-','MarkerEdgeColor','w','MarkerFaceColor','b','Marker','o','MarkerSize',10);
+plot(ABs2EW,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(3,:),'Marker','d','MarkerSize',10);
+plot(SUs2EW,'k-','MarkerEdgeColor','w','MarkerFaceColor',ModelCs(2,:),'Marker','d','MarkerSize',10);
+plot(0:4,zeros(1,5),'k');
+xlim([0 3]); ylim([-1 10]);
+ax = gca;
+ax.XTick = [1 2];
+ax.XTickLabel = {'Consistent','High Variability'};
+legend('P06','AB','SU');
+legend('boxoff');
+xlabel('Condition');
+title('P06 Early Washout (strides 6:30)');
+ylabel('SAI (%)');
+
 
 end

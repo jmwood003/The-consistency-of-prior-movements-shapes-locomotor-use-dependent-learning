@@ -3,16 +3,20 @@ cnstrnt = 5;
 SIM = [Data;Target];
 
 %Set options
-optionsTp = optimoptions('fmincon','Algorithm','sqp','MaxFunctionEvaluations',1e16,'OptimalityTolerance',1e-16);
+% optionsTp = optimoptions('fmincon','Algorithm','sqp','MaxFunctionEvaluations',1e16,'OptimalityTolerance',1e-16);
+optionsTp = optimoptions('fmincon','MaxFunctionEvaluations',1e16,'OptimalityTolerance',1e-16);
 
 %Set initials (C A E F); F must be at least 5 times lower than C;
 C = rand(1);
 F = 0+((C/cnstrnt)-0)*rand;
 x0 = [C, rand(1,2), F];
+% x0 = rand(1,4);
 
 %Set linear constraints
 Ac = [-1 0 0 cnstrnt; eye(4); eye(4)*-1];
 bc = [0; 1; 1; 1; 1; 0; 0; 0; 0];
+% Ac = [eye(4); eye(4)*-1];
+% bc = [1; 1; 1; 1; 0; 0; 0; 0];
 
 [params, error] = fmincon(@sq_err, x0, Ac, bc, [], [], [], [], [], optionsTp, SIM);
 

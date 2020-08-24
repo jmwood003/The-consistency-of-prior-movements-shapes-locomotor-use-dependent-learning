@@ -8,7 +8,9 @@ Uidx = N*2+1:N*3;
 wshidx = 752:1499;
 AEidxI = 752:756;
 AEidxE = 757:786;
+%Learning indices
 PlatIdx = 722:751;
+LrnIdx = 251:260;
 
 %Plot 
 figure; hold on
@@ -19,7 +21,7 @@ shadedErrorBar(1:size(X,2),nanmean(X(Ridx,:),1),nanstd(X(Ridx,:),0,1),'lineProps
 ylim([0 40]);
 ylabel('Step Asymmetry (%)');
 title('Repeated Condition');
-legend('Adaptive Bayes prediction','Strategy + UDP prediction','Location','northwest');
+legend('Adaptive Bayes prediction','Strategy + UDP prediction','Location','north');
 legend('boxoff');
 %Create Inset of washout
 axes('Position',[.6 .8 .2 .1])
@@ -30,8 +32,14 @@ shadedErrorBar(1:size(X(wshidx),2),nanmean(X(Ridx,wshidx),1),nanstd(X(Ridx,wshid
 plot(1:size(X(wshidx),2),zeros(1,size(X(1,wshidx),2)),'k-');
 ylim([-2 10]);
 xlim([0 50]);
-% set(gca,'YTickLabel',[]);
-% set(gca,'XTickLabel',[]);
+%Create inset of early learning
+axes('Position',[.15 .8 .08 .08])
+box on
+hold on
+shadedErrorBar(1:size(TMAP(LrnIdx),2),nanmean(TMAP(Ridx,LrnIdx),1),nanstd(TMAP(Ridx,LrnIdx),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X(LrnIdx),2),nanmean(X(Ridx,LrnIdx),1),nanstd(X(Ridx,LrnIdx),0,1),'lineProps','-r');
+plot(1:size(X(LrnIdx),2),ones(1,size(X(1,LrnIdx),2))*22,'k-');
+xlim([0 length(LrnIdx)]);
 
 %Plot the uniform condition
 subplot(4,3,4:6); hold on
@@ -53,6 +61,14 @@ ylim([-2 10]);
 xlim([0 50]);
 % set(gca,'YTickLabel',[]);
 % set(gca,'XTickLabel',[]);
+axes('Position',[.15 .59 .08 .08])
+box on
+hold on
+shadedErrorBar(1:size(TMAP(LrnIdx),2),nanmean(TMAP(Fidx,LrnIdx),1),nanstd(TMAP(Fidx,LrnIdx),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X(LrnIdx),2),nanmean(X(Fidx,LrnIdx),1),nanstd(X(Fidx,LrnIdx),0,1),'lineProps','-r');
+plot(1:size(X(LrnIdx),2),ones(1,size(X(1,LrnIdx),2))*22,'k-');
+xlim([0 length(LrnIdx)]);
+
 
 %Plot the uniform condition
 subplot(4,3,7:9); hold on
@@ -75,6 +91,13 @@ ylim([-2 10]);
 xlim([0 50]);
 % set(gca,'YTickLabel',[]);
 % set(gca,'XTickLabel',[]);
+axes('Position',[.15 .37 .08 .08])
+box on
+hold on
+shadedErrorBar(1:size(TMAP(LrnIdx),2),nanmean(TMAP(Uidx,LrnIdx),1),nanstd(TMAP(Uidx,LrnIdx),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X(LrnIdx),2),nanmean(X(Uidx,LrnIdx),1),nanstd(X(Uidx,LrnIdx),0,1),'lineProps','-r');
+plot(1:size(X(LrnIdx),2),ones(1,size(X(1,LrnIdx),2))*22,'k-');
+xlim([0 length(LrnIdx)]);
 
 %Plot washout rates 
 %Bayes model
