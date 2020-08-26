@@ -112,7 +112,6 @@ title('Early Washout (strides 6:30)');
 %Learning mean and SAI (DO NOT BIN)
 Lrnidx = find(P==2);
 pltpos = [1,1,2,2,2];
-rand
 subplot(3,3,9); hold on
 for i = 1:size(Dbin,1)
         jitterx1 = (pltpos(i)-0.05) + (0.1)*rand(1);
