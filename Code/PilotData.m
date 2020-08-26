@@ -84,9 +84,9 @@ EW1 = [mean(D(1,EWidx),2), mean(D(4,EWidx),2)];
 EW2 = [mean(D(2,EWidx),2), mean(D(5,EWidx),2)];
 
 subplot(3,3,7); hold on
-plot(IW1,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(1,:),'Marker','s','MarkerSize',10);
+plot(IW1,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(1,:),'Marker','o','MarkerSize',10);
 plot(IW2,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(2,:),'Marker','o','MarkerSize',10);
-xlim([0 3]);
+xlim([0 3]); ylim([0 5]);
 ax = gca;
 ax.XTick = [1 2];
 ax.XTickLabel = {'Consistent','High Variability'};
@@ -97,9 +97,9 @@ title('Initial Bias (strides 1:5)');
 ylabel('SAI (%)');
 
 subplot(3,3,8); hold on
-plot(EW1,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(1,:),'Marker','s','MarkerSize',10);
+plot(EW1,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(1,:),'Marker','o','MarkerSize',10);
 plot(EW2,'k-','MarkerEdgeColor','w','MarkerFaceColor',DataCs(2,:),'Marker','o','MarkerSize',10);
-xlim([0 3]);
+xlim([0 3]); ylim([0 5]);
 ax = gca;
 ax.XTick = [1 2];
 ax.XTickLabel = {'Consistent','High Variability'};
@@ -112,13 +112,15 @@ title('Early Washout (strides 6:30)');
 %Learning mean and SAI (DO NOT BIN)
 Lrnidx = find(P==2);
 pltpos = [1,1,2,2,2];
-
+rand
 subplot(3,3,9); hold on
 for i = 1:size(Dbin,1)
-        p1 = plot(pltpos(i), nanmean(D(i,Lrnidx),2),'wo','MarkerFaceColor','b','MarkerSize',10);
-        p2 = plot(pltpos(i), nanstd(D(i,Lrnidx),0,2),'wo','MarkerFaceColor','r','MarkerSize',10);
+        jitterx1 = (pltpos(i)-0.05) + (0.1)*rand(1);
+        jitterx2 = (pltpos(i)-0.05) + (0.1)*rand(1);
+        p1 = plot(jitterx1, nanmean(D(i,Lrnidx),2),'wo','MarkerFaceColor','b','MarkerSize',5);
+        p2 = plot(jitterx2, nanstd(D(i,Lrnidx),0,2),'wo','MarkerFaceColor','r','MarkerSize',5);
 end
-ylim([0 35]); xlim([0 3]);
+ylim([0 25]); xlim([0 3]);
 legend([p1, p2],'Learning Mean', 'Learning Std dev');
 ax = gca;
 ax.XTick = [1 2];
