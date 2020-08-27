@@ -26,7 +26,7 @@ for n = 1:size(t,2)-1
     if t(n) == 0       %When the target is 0 this whole term S should also equal 0
         S(n+1) = 0;
     else
-        S(n+1) = C*(err(n))+A*S(n); 
+        S(n+1) = C*(err(n)) + A*S(n); 
     end
 
     %Use dependent component 
