@@ -1,9 +1,9 @@
 function SimPlot(TMAP,X,numstr,N)
 
 %Indexing variables
-Ridx = 1:N;
-Fidx = N+1:N*2;
-Uidx = N*2+1:N*3;
+Constidx = 1:N;
+LVidx = N+1:N*2;
+HVidx = N*2+1:N*3;
 %Washout index
 wshidx = 752:1499;
 AEidxI = 752:756;
@@ -12,23 +12,47 @@ AEidxE = 757:786;
 PlatIdx = 722:751;
 LrnIdx = 251:260;
 
+%Mean aftereffects for both simulations 
+AEi_ConstAB = nanmean(TMAP(Constidx,AEidxI),2);
+AEe_ConstAB = nanmean(TMAP(Constidx,AEidxE),2);
+AEi_LowAB = nanmean(TMAP(LVidx,AEidxI),2);
+AEe_LowAB = nanmean(TMAP(LVidx,AEidxE),2);
+AEi_HighAB = nanmean(TMAP(HVidx,AEidxI),2);
+AEe_HighAB = nanmean(TMAP(HVidx,AEidxE),2);
+
+AEi_ConstSU = nanmean(X(Constidx,AEidxI),2);
+AEe_ConstSU = nanmean(X(Constidx,AEidxE),2);
+AEi_LowSU = nanmean(X(LVidx,AEidxI),2);
+AEe_LowSU = nanmean(X(LVidx,AEidxE),2);
+AEi_HighSU = nanmean(X(HVidx,AEidxI),2);
+AEe_HighSU = nanmean(X(HVidx,AEidxE),2);
+
+%Washout rates using regression:
+WR_ConstAB = RateRegress(TMAP(Constidx,wshidx),numstr);
+WR_LowAB = RateRegress(TMAP(LVidx,wshidx),numstr);
+WR_HighAB = RateRegress(TMAP(HVidx,wshidx),numstr);
+
+WR_ConstSU = RateRegress(X(Constidx,wshidx),numstr);
+WR_LowSU = RateRegress(X(LVidx,wshidx),numstr);
+WR_HighSU = RateRegress(X(HVidx,wshidx),numstr);
+
 %Plot 
 figure; hold on
 %Plot the stable condition
 subplot(4,3,1:3); hold on
-shadedErrorBar(1:size(TMAP,2),nanmean(TMAP(Ridx,:),1),nanstd(TMAP(Ridx,:),0,1),'lineProps','-b');
-shadedErrorBar(1:size(X,2),nanmean(X(Ridx,:),1),nanstd(X(Ridx,:),0,1),'lineProps','-r');
+shadedErrorBar(1:size(TMAP,2),nanmean(TMAP(Constidx,:),1),nanstd(TMAP(Constidx,:),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X,2),nanmean(X(Constidx,:),1),nanstd(X(Constidx,:),0,1),'lineProps','-r');
 ylim([0 40]);
 ylabel('Step Asymmetry (%)');
-title('Repeated Condition');
+title('Constant Condition');
 legend('Adaptive Bayes prediction','Strategy + UDP prediction','Location','north');
 legend('boxoff');
 %Create Inset of washout
 axes('Position',[.6 .8 .2 .1])
 box on
 hold on
-shadedErrorBar(1:size(TMAP(wshidx),2),nanmean(TMAP(Ridx,wshidx),1),nanstd(TMAP(Ridx,wshidx),0,1),'lineProps','-b');
-shadedErrorBar(1:size(X(wshidx),2),nanmean(X(Ridx,wshidx),1),nanstd(X(Ridx,wshidx),0,1),'lineProps','-r');
+shadedErrorBar(1:size(TMAP(wshidx),2),nanmean(TMAP(Constidx,wshidx),1),nanstd(TMAP(Constidx,wshidx),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X(wshidx),2),nanmean(X(Constidx,wshidx),1),nanstd(X(Constidx,wshidx),0,1),'lineProps','-r');
 plot(1:size(X(wshidx),2),zeros(1,size(X(1,wshidx),2)),'k-');
 ylim([-2 10]);
 xlim([0 50]);
@@ -36,26 +60,26 @@ xlim([0 50]);
 axes('Position',[.15 .8 .08 .08])
 box on
 hold on
-shadedErrorBar(1:size(TMAP(LrnIdx),2),nanmean(TMAP(Ridx,LrnIdx),1),nanstd(TMAP(Ridx,LrnIdx),0,1),'lineProps','-b');
-shadedErrorBar(1:size(X(LrnIdx),2),nanmean(X(Ridx,LrnIdx),1),nanstd(X(Ridx,LrnIdx),0,1),'lineProps','-r');
+shadedErrorBar(1:size(TMAP(LrnIdx),2),nanmean(TMAP(Constidx,LrnIdx),1),nanstd(TMAP(Constidx,LrnIdx),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X(LrnIdx),2),nanmean(X(Constidx,LrnIdx),1),nanstd(X(Constidx,LrnIdx),0,1),'lineProps','-r');
 plot(1:size(X(LrnIdx),2),ones(1,size(X(1,LrnIdx),2))*22,'k-');
 xlim([0 length(LrnIdx)]);
 
 %Plot the uniform condition
 subplot(4,3,4:6); hold on
-shadedErrorBar(1:size(TMAP,2),nanmean(TMAP(Fidx,:),1),nanstd(TMAP(Fidx,:),0,1),'lineProps','-b');
-shadedErrorBar(1:size(X,2),nanmean(X(Fidx,:),1),nanstd(X(Fidx,:),0,1),'lineProps','-r');
+shadedErrorBar(1:size(TMAP,2),nanmean(TMAP(LVidx,:),1),nanstd(TMAP(LVidx,:),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X,2),nanmean(X(LVidx,:),1),nanstd(X(LVidx,:),0,1),'lineProps','-r');
 ylim([0 40]);
 ylabel('Step Asymmetry (%)');
-title('5% \sigma Condition');
+title('Low Variability Condition');
 % legend('Bayes Prediction','Two process prediction');
 % legend('boxoff');
 %Create Inset of washout
 axes('Position',[.6 .59 .2 .1])
 box on
 hold on
-shadedErrorBar(1:size(TMAP(wshidx),2),nanmean(TMAP(Fidx,wshidx),1),nanstd(TMAP(Fidx,wshidx),0,1),'lineProps','-b');
-shadedErrorBar(1:size(X(wshidx),2),nanmean(X(Fidx,wshidx),1),nanstd(X(Fidx,wshidx),0,1),'lineProps','-r');
+shadedErrorBar(1:size(TMAP(wshidx),2),nanmean(TMAP(LVidx,wshidx),1),nanstd(TMAP(LVidx,wshidx),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X(wshidx),2),nanmean(X(LVidx,wshidx),1),nanstd(X(LVidx,wshidx),0,1),'lineProps','-r');
 plot(1:size(X(wshidx),2),zeros(1,size(X(1,wshidx),2)),'k-');
 ylim([-2 10]);
 xlim([0 50]);
@@ -64,28 +88,28 @@ xlim([0 50]);
 axes('Position',[.15 .59 .08 .08])
 box on
 hold on
-shadedErrorBar(1:size(TMAP(LrnIdx),2),nanmean(TMAP(Fidx,LrnIdx),1),nanstd(TMAP(Fidx,LrnIdx),0,1),'lineProps','-b');
-shadedErrorBar(1:size(X(LrnIdx),2),nanmean(X(Fidx,LrnIdx),1),nanstd(X(Fidx,LrnIdx),0,1),'lineProps','-r');
+shadedErrorBar(1:size(TMAP(LrnIdx),2),nanmean(TMAP(LVidx,LrnIdx),1),nanstd(TMAP(LVidx,LrnIdx),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X(LrnIdx),2),nanmean(X(LVidx,LrnIdx),1),nanstd(X(LVidx,LrnIdx),0,1),'lineProps','-r');
 plot(1:size(X(LrnIdx),2),ones(1,size(X(1,LrnIdx),2))*22,'k-');
 xlim([0 length(LrnIdx)]);
 
 
 %Plot the uniform condition
 subplot(4,3,7:9); hold on
-shadedErrorBar(1:size(TMAP,2),nanmean(TMAP(Uidx,:),1),nanstd(TMAP(Uidx,:),0,1),'lineProps','-b');
-shadedErrorBar(1:size(X,2),nanmean(X(Uidx,:),1),nanstd(X(Uidx,:),0,1),'lineProps','-r');
+shadedErrorBar(1:size(TMAP,2),nanmean(TMAP(HVidx,:),1),nanstd(TMAP(HVidx,:),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X,2),nanmean(X(HVidx,:),1),nanstd(X(HVidx,:),0,1),'lineProps','-r');
 ylim([0 40]);
 xlabel('Strides')
 ylabel('Step Asymmetry (%)');
-title('Uniform Condition');
+title('High Variability Condition');
 % legend('Bayes Prediction','Two process prediction');
 % legend('boxoff');
 %Create Inset of washout
 axes('Position',[.6 .37 .2 .1])
 box on
 hold on
-shadedErrorBar(1:size(TMAP(wshidx),2),nanmean(TMAP(Uidx,wshidx),1),nanstd(TMAP(Uidx,wshidx),0,1),'lineProps','-b');
-shadedErrorBar(1:size(X(wshidx),2),nanmean(X(Uidx,wshidx),1),nanstd(X(Uidx,wshidx),0,1),'lineProps','-r');
+shadedErrorBar(1:size(TMAP(wshidx),2),nanmean(TMAP(HVidx,wshidx),1),nanstd(TMAP(HVidx,wshidx),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X(wshidx),2),nanmean(X(HVidx,wshidx),1),nanstd(X(HVidx,wshidx),0,1),'lineProps','-r');
 plot(1:size(X(wshidx),2),zeros(1,size(X(1,wshidx),2)),'k-');
 ylim([-2 10]);
 xlim([0 50]);
@@ -94,34 +118,34 @@ xlim([0 50]);
 axes('Position',[.15 .37 .08 .08])
 box on
 hold on
-shadedErrorBar(1:size(TMAP(LrnIdx),2),nanmean(TMAP(Uidx,LrnIdx),1),nanstd(TMAP(Uidx,LrnIdx),0,1),'lineProps','-b');
-shadedErrorBar(1:size(X(LrnIdx),2),nanmean(X(Uidx,LrnIdx),1),nanstd(X(Uidx,LrnIdx),0,1),'lineProps','-r');
+shadedErrorBar(1:size(TMAP(LrnIdx),2),nanmean(TMAP(HVidx,LrnIdx),1),nanstd(TMAP(HVidx,LrnIdx),0,1),'lineProps','-b');
+shadedErrorBar(1:size(X(LrnIdx),2),nanmean(X(HVidx,LrnIdx),1),nanstd(X(HVidx,LrnIdx),0,1),'lineProps','-r');
 plot(1:size(X(LrnIdx),2),ones(1,size(X(1,LrnIdx),2))*22,'k-');
 xlim([0 length(LrnIdx)]);
 
 %Plot washout rates 
 %Bayes model
 subplot(4,3,10); hold on
-plot(1,nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),'bo');
-errorbar(1,nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),nanstd(RateRegress(TMAP(Ridx,wshidx),numstr)),'b');
-plot(2,nanmean(RateRegress(X(Ridx,wshidx),numstr)),'ro');
-errorbar(2,nanmean(RateRegress(X(Ridx,wshidx),numstr)),nanstd(RateRegress(X(Ridx,wshidx),numstr)),'r');
-plot(4,nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),'bo');
-errorbar(4,nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),nanstd(RateRegress(TMAP(Fidx,wshidx),numstr)),'b');
-plot(5,nanmean(RateRegress(X(Fidx,wshidx),numstr)),'ro');
-errorbar(5,nanmean(RateRegress(X(Fidx,wshidx),numstr)),nanstd(RateRegress(X(Fidx,wshidx),numstr)),'r');
-plot(7,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),'bo');
-errorbar(7,nanmean(RateRegress(TMAP(Uidx,wshidx),numstr)),nanstd(RateRegress(TMAP(Uidx,wshidx),numstr)),'b');
-plot(8,nanmean(RateRegress(X(Uidx,wshidx),numstr)),'ro');
-errorbar(8,nanmean(RateRegress(X(Uidx,wshidx),numstr)),nanstd(RateRegress(X(Uidx,wshidx),numstr)),'r');
+plot(1,nanmean(WR_ConstAB),'bo','MarkerFaceColor','b');
+errorbar(1,nanmean(WR_ConstAB),nanstd(WR_ConstAB),'b');
+plot(2,nanmean(WR_ConstSU),'ro','MarkerFaceColor','r');
+errorbar(2,nanmean(WR_ConstSU),nanstd(WR_ConstSU),'r');
+plot(4,nanmean(WR_LowAB),'bo','MarkerFaceColor','b');
+errorbar(4,nanmean(WR_LowAB),nanstd(WR_LowAB),'b');
+plot(5,nanmean(WR_LowSU),'ro','MarkerFaceColor','r');
+errorbar(5,nanmean(WR_LowSU),nanstd(WR_LowSU),'r');
+plot(7,nanmean(WR_HighAB),'bo','MarkerFaceColor','b');
+errorbar(7,nanmean(WR_HighAB),nanstd(WR_HighAB),'b');
+plot(8,nanmean(WR_HighSU),'ro','MarkerFaceColor','r');
+errorbar(8,nanmean(WR_HighSU),nanstd(WR_HighSU),'r');
 % plot(1:3,[nanmean(RateRegress(TMAP(Ridx,wshidx),numstr)),nanmean(RateRegress(TMAP(Fidx,wshidx),numstr)),nanmean(RateRegress(TMAP(Uidx,wshidx),numstr))],'k-');
-% ylim([0 0.]);
+ylim([-0.1 1]);
 title('Washout Rates');
 ylabel('Unlearning/stride');
 % xlabel('Conditions');
 ax = gca;
 ax.XTick = [1.5:8.5];
-ax.XTickLabel = {'R','','','5% \sigma','','','U','',''};
+ax.XTickLabel = {'Const.','','','LV','','','HV','',''};
 
 % %Two process model
 % subplot(3,3,6); hold on
@@ -159,48 +183,48 @@ ax.XTickLabel = {'R','','','5% \sigma','','','U','',''};
 % ylabel('SAI (%)');
 % xlabel('Conditions');
 
-%plot aftereffects
+%plot initial washout aftereffects
 subplot(4,3,11); hold on
-plot(1,nanmean(nanmean(TMAP(Ridx,AEidxI),1)),'bo');
-errorbar(1,nanmean(nanmean(TMAP(Ridx,AEidxI),1)),nanstd(nanmean(TMAP(Ridx,AEidxI),1)),'b');
-plot(1.1,nanmean(nanmean(X(Ridx,AEidxI),1)),'ro');
-errorbar(1.1,nanmean(nanmean(X(Ridx,AEidxI),1)),nanstd(nanmean(X(Ridx,AEidxI),1)),'r');
-plot(2,nanmean(nanmean(TMAP(Fidx,AEidxI),1)),'bo');
-errorbar(2,nanmean(nanmean(TMAP(Fidx,AEidxI),1)),nanstd(nanmean(TMAP(Fidx,AEidxI),1)),'b');
-plot(2.1,nanmean(nanmean(X(Fidx,AEidxI),1)),'ro');
-errorbar(2.1,nanmean(nanmean(X(Fidx,AEidxI),1)),nanstd(nanmean(X(Fidx,AEidxI),1)),'r');
-plot(3,nanmean(nanmean(TMAP(Uidx,AEidxI),1)),'bo');
-errorbar(3,nanmean(nanmean(TMAP(Uidx,AEidxI))),nanstd(nanmean(TMAP(Uidx,AEidxI))),'b');
-plot(3.1,nanmean(nanmean(X(Uidx,AEidxI),1)),'ro');
-errorbar(3.1,nanmean(nanmean(X(Uidx,AEidxI))),nanstd(nanmean(X(Uidx,AEidxI))),'r');
+plot(1,nanmean(AEi_ConstAB),'bo','MarkerFaceColor','b');
+errorbar(1,nanmean(AEi_ConstAB),nanstd(AEi_ConstAB),'b');
+plot(1.1,nanmean(AEi_ConstSU),'ro','MarkerFaceColor','r');
+errorbar(1.1,nanmean(AEi_ConstSU),nanstd(AEi_ConstSU),'r');
+plot(2,nanmean(AEi_LowAB),'bo','MarkerFaceColor','b');
+errorbar(2,nanmean(AEi_LowAB),nanstd(AEi_LowAB),'b');
+plot(2.1,nanmean(AEi_LowSU),'ro','MarkerFaceColor','r');
+errorbar(2.1,nanmean(AEi_LowSU),nanstd(AEi_LowSU),'r');
+plot(3,nanmean(AEi_HighAB),'bo','MarkerFaceColor','b');
+errorbar(3,nanmean(AEi_HighAB),nanstd(AEi_HighAB),'b');
+plot(3.1,nanmean(AEi_HighSU),'ro','MarkerFaceColor','r');
+errorbar(3.1,nanmean(AEi_HighSU),nanstd(AEi_HighSU),'r');
 xlim([0.5 3.5]);
 ylim([0 10]);
 ax = gca;
 ax.XTick = [1:3];
-ax.XTickLabel = {'R','5% \sigma','U'};
+ax.XTickLabel = {'Const.','LV','HV'};
 title('Initial Bias');
 ylabel('SAI (%)');
 xlabel('Conditions');
 
-%plot aftereffects
+%plot early washout aftereffects
 subplot(4,3,12); hold on
-plot(1,nanmean(nanmean(TMAP(Ridx,AEidxE),1)),'bo');
-errorbar(1,nanmean(nanmean(TMAP(Ridx,AEidxE),1)),nanstd(nanmean(TMAP(Ridx,AEidxE),1)),'b');
-plot(1.1,nanmean(nanmean(X(Ridx,AEidxE),1)),'ro');
-errorbar(1.1,nanmean(nanmean(X(Ridx,AEidxE),1)),nanstd(nanmean(X(Ridx,AEidxE),1)),'r');
-plot(2,nanmean(nanmean(TMAP(Fidx,AEidxE),1)),'bo');
-errorbar(2,nanmean(nanmean(TMAP(Fidx,AEidxE),1)),nanstd(nanmean(TMAP(Fidx,AEidxE),1)),'b');
-plot(2.1,nanmean(nanmean(X(Fidx,AEidxE),1)),'ro');
-errorbar(2.1,nanmean(nanmean(X(Fidx,AEidxE),1)),nanstd(nanmean(X(Fidx,AEidxE),1)),'r');
-plot(3,nanmean(nanmean(TMAP(Uidx,AEidxE),1)),'bo');
-errorbar(3,nanmean(nanmean(TMAP(Uidx,AEidxE))),nanstd(nanmean(TMAP(Uidx,AEidxE))),'b');
-plot(3.1,nanmean(nanmean(X(Uidx,AEidxE),1)),'ro');
-errorbar(3.1,nanmean(nanmean(X(Uidx,AEidxE))),nanstd(nanmean(X(Uidx,AEidxE))),'r');
+plot(1,nanmean(AEe_ConstAB),'bo','MarkerFaceColor','b');
+errorbar(1,nanmean(AEe_ConstAB),nanstd(AEe_ConstAB),'b');
+plot(1.1,nanmean(AEe_ConstSU),'ro','MarkerFaceColor','r');
+errorbar(1.1,nanmean(AEe_ConstSU),nanstd(AEe_ConstSU),'r');
+plot(2,nanmean(AEe_LowAB),'bo','MarkerFaceColor','b');
+errorbar(2,nanmean(AEe_LowAB),nanstd(AEe_LowAB),'b');
+plot(2.1,nanmean(AEe_LowSU),'ro','MarkerFaceColor','r');
+errorbar(2.1,nanmean(AEe_LowSU),nanstd(AEe_LowSU),'r');
+plot(3,nanmean(AEe_HighAB),'bo','MarkerFaceColor','b');
+errorbar(3,nanmean(AEe_HighAB),nanstd(AEe_HighAB),'b');
+plot(3.1,nanmean(AEe_HighSU),'ro','MarkerFaceColor','r');
+errorbar(3.1,nanmean(AEe_HighSU),nanstd(AEe_HighSU),'r');
 xlim([0.5 3.5]);
 ylim([0 10]);
 ax = gca;
 ax.XTick = [1:3];
-ax.XTickLabel = {'R','5% \sigma','U'};
+ax.XTickLabel = {'Const.','LV','HV'};
 title('Early Washout');
 ylabel('SAI (%)');
 xlabel('Conditions');

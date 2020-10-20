@@ -11,7 +11,7 @@ Tmu = 22;
 rng('shuffle','twister');
 
 %Number of bootstraps per condition
-N = 100;
+N = 1000;
 %Number of strides to account for in the rate calculation
 numstr = 50;
 
@@ -54,9 +54,11 @@ for i = 1:N
 %     pB = [IndABParams(Bidx,1), IndABParams(Sidx,2)];
 %     pT = [IndSUParams(Cidx,1), IndSUParams(Aidx,2), IndSUParams(Eidx,3), IndSUParams(Fidx,4)];
     pB = IndABParams(ABidx,:);
-    pT = IndSUParams(SUidx,:);
-    
-    for j = 1:length(pB)
+    pT = IndSUParams(SUidx,:);    
+%     pB = IndABParams(i,:);
+%     pT = IndSUParams(i,:);
+      
+    for j = 1:size(pB,1)
         %Simulate
         %Repeated
         [T_map] = ABsim(pB(j,:),tR);
@@ -75,12 +77,12 @@ for i = 1:N
         xu(j,:) = x;  
     end
 
-    TMAPr(i,:) = nanmean(tmapr);
-    Xr(i,:) = nanmean(xr);  
-    TMAPf(i,:) = nanmean(tmapf);
-    Xf(i,:) = nanmean(xf);  
-    TMAPu(i,:) = nanmean(tmapu);
-    Xu(i,:) = nanmean(xu);  
+    TMAPr(i,:) = nanmean(tmapr,1);
+    Xr(i,:) = nanmean(xr,1);  
+    TMAPf(i,:) = nanmean(tmapf,1);
+    Xf(i,:) = nanmean(xf,1);  
+    TMAPu(i,:) = nanmean(tmapu,1);
+    Xu(i,:) = nanmean(xu,1);  
 
 end
 
