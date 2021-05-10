@@ -8,6 +8,11 @@ function TargetFig
 helpdir = 'C:\Users\Jonathan\Documents\GitHub\UDPV\Code\HelperFuntions';
 addpath(helpdir);
 
+colors = lines(3);
+Ccolor = colors(1,:);
+LVcolor = colors(2,:);
+HVcolor = colors(3,:);
+
 %Set experimental parameters:
 %Number of learning strides:
 LrnStrides = 500;
@@ -27,53 +32,47 @@ T_Uniform = UT(LrnStrides,reprng,1);
 %Plot
 figure; hold on
 subplot(2,3,1); hold on
-histogram(T_Rep(251:750),'FaceColor','k');
+histogram(T_Rep(251:750),'FaceColor',Ccolor);
 xlim([0 45]);
-% ylim([0 500]);
 xlabel('SAI Target (%)','FontSize',10);
-% xlabel(['SAI Target (%; Mu = ',num2str(Stablemu), '; Sigma = ', num2str(Stablestd), ')'],'FontSize',10);
-ylabel('Probability','FontSize',10);
-title('Repeated Condition','FontSize',12);
+ylabel('Strides','FontSize',10);
+title('Constant Condition','FontSize',12);
 
 subplot(2,3,4); hold on
-plot(T_Rep,'-k','LineWidth',3);
+rectangle('Position',[0,-5,250,50],'FaceColor',[0.8 0.8 0.8]);
+rectangle('Position',[750,-5,750,50],'FaceColor',[0.8 0.8 0.8]);
+plot(T_Rep,'-', 'Color', Ccolor, 'LineWidth',3);
 ylim([-5 45]);
 xlim([0 1500]);
 xlabel('Strides','FontSize',10);
 ylabel('SAI Target (%)','FontSize',10);
 
 subplot(2,3,2); hold on
-histogram(T_5sig(251:750),15,'FaceColor','b');
+histogram(T_5sig(251:750),15,'FaceColor',LVcolor);
 xlim([0 45]);
-% ylim([0 1]);
 xlabel('SAI Target (%)','FontSize',10);
-% xlabel(['SAI Target (%; Mu = ',num2str(Var5mu), '; Sigma = ', num2str(Var5std), ')'],'FontSize',15);
-% ylabel('Frequency','FontSize',10);
-title('5\sigma Condition','FontSize',12);
+title('Low Variability Condition','FontSize',12);
 
 subplot(2,3,5); hold on
-plot(T_5sig,'-b','LineWidth',1);
+rectangle('Position',[0,-5,250,50],'FaceColor',[0.8 0.8 0.8]);
+rectangle('Position',[750,-5,750,50],'FaceColor',[0.8 0.8 0.8]);
+plot(T_5sig,'-','Color', LVcolor, 'LineWidth',1);
 ylim([-5 45]);
 xlim([0 1500]);
 xlabel('Strides','FontSize',10);
-% ylabel('SAI Target (%)','FontSize',10);
-% title('Variable Condition','FontSize',12);
 
 subplot(2,3,3); hold on
-histogram(T_Uniform(251:750),15,'FaceColor','r');
+histogram(T_Uniform(251:750),15,'FaceColor',HVcolor);
 xlim([0 45]);
-% ylim([0 1]);
 xlabel('SAI Target (%)','FontSize',10);
-% xlabel(['SAI Target (%; Mu = ',num2str(Uniformmu), '; Sigma = ', num2str(Uniformstd), ')'],'FontSize',15);
-% ylabel('Frequency','FontSize',10);
-title('Uniform Condition','FontSize',12);
+title('High Variability Condition','FontSize',12);
 
 subplot(2,3,6); hold on
-plot(T_Uniform,'-r','LineWidth',1);
+rectangle('Position',[0,-5,250,50],'FaceColor',[0.8 0.8 0.8]);
+rectangle('Position',[750,-5,750,50],'FaceColor',[0.8 0.8 0.8]);
+plot(T_Uniform,'-','Color',HVcolor ,'LineWidth',1);
 ylim([-5 45]);
 xlim([0 1500]);
 xlabel('Strides','FontSize',10);
-% ylabel('SAI Target (%)','FontSize',15);
-% title('Uniform Condition','FontSize',20);
 
 end

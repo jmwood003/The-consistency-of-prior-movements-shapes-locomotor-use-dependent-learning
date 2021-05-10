@@ -40,56 +40,61 @@ for i = 1:N
     %Bootstrap
     [~, ABidx] = bootstrp(1,@mean,IndABParams);
     [~, SUidx] = bootstrp(1,@mean,IndSUParams);
-%     [~, Cidx] = bootstrp(1,@mean,IndSUParams(:,1));
-%     [~, Aidx] = bootstrp(1,@mean,IndSUParams(:,2));
-%     [~, Eidx] = bootstrp(1,@mean,IndSUParams(:,3));
-%     [~, Fidx] = bootstrp(1,@mean,IndSUParams(:,4));
-    
+
     %Set the target
     tR = RT(LrnStrides,Tmu,1);
     tF = FT(LrnStrides,Tmu,reprng,1); 
     tU = UT(LrnStrides,reprng,1);
     
     %Set the parameters
-%     pB = [IndABParams(Bidx,1), IndABParams(Sidx,2)];
-%     pT = [IndSUParams(Cidx,1), IndSUParams(Aidx,2), IndSUParams(Eidx,3), IndSUParams(Fidx,4)];
     pB = IndABParams(ABidx,:);
     pT = IndSUParams(SUidx,:);    
-%     pB = IndABParams(i,:);
-%     pT = IndSUParams(i,:);
-      
+ 
     for j = 1:size(pB,1)
         %Simulate
-        %Repeated
+        %Constant
         [T_map] = ABsim(pB(j,:),tR);
-        [x,~,~] = SUsim(pT(j,:),tR);
-        tmapr(j,:) = T_map;
-        xr(j,:) = x;  
-        %5% sigma
+        [x,w,s] = SUsim(pT(j,:),tR);
+        tmapc(j,:) = T_map;
+        xc(j,:) = x;  
+        wc(j,:) = w;
+        sc(j,:) = s;
+        %Low variability
         [T_map] = ABsim(pB(j,:),tF);
-        [x,~,~] = SUsim(pT(j,:),tF);
-        tmapf(j,:) = T_map;
-        xf(j,:) = x;  
-        %Uniform
+        [x,w,s] = SUsim(pT(j,:),tF);
+        tmapLV(j,:) = T_map;
+        xLV(j,:) = x;  
+        wLV(j,:) = w;
+        sLV(j,:) = s;        
+        %High Variability
         [T_map] = ABsim(pB(j,:),tU);
-        [x,~,~] = SUsim(pT(j,:),tU);
-        tmapu(j,:) = T_map;
-        xu(j,:) = x;  
+        [x,w,s] = SUsim(pT(j,:),tU);
+        tmapHV(j,:) = T_map;
+        xHV(j,:) = x;  
+        wHV(j,:) = w;
+        sHV(j,:) = s;        
     end
 
-    TMAPr(i,:) = nanmean(tmapr,1);
-    Xr(i,:) = nanmean(xr,1);  
-    TMAPf(i,:) = nanmean(tmapf,1);
-    Xf(i,:) = nanmean(xf,1);  
-    TMAPu(i,:) = nanmean(tmapu,1);
-    Xu(i,:) = nanmean(xu,1);  
-
+    TMAPc(i,:) = nanmean(tmapc,1);
+    Xc(i,:) = nanmean(xc,1);  
+    Wc(i,:) = nanmean(wc,1);
+    Sc(i,:) = nanmean(sc,1);
+    TMAPlv(i,:) = nanmean(tmapLV,1);
+    Xlv(i,:) = nanmean(xLV,1);  
+    Wlv(i,:) = nanmean(wLV,1);
+    Slv(i,:) = nanmean(sLV,1);
+    TMAPhv(i,:) = nanmean(tmapHV,1);
+    Xhv(i,:) = nanmean(xHV,1);  
+    Whv(i,:) = nanmean(wHV,1);
+    Shv(i,:) = nanmean(sHV,1);
 end
 
-TMAP = [TMAPr; TMAPf; TMAPu];
-X = [Xr; Xf; Xu];
+TMAP = [TMAPc; TMAPlv; TMAPhv];
+X = [Xc; Xlv; Xhv];
+W = [Wc; Wlv; Whv];
+S = [Sc; Slv; Shv];
 
-SimPlot(TMAP,X,numstr,N);
+SimPlot(TMAP,X,W,S,numstr,N);
 
 % VarcompPrct = (sum(Fcomp)/length(Fcomp))*100
 % UnifcompPrct = (sum(Unifcomp)/length(Unifcomp))*100
