@@ -1,5 +1,5 @@
 # General Information
-This repository includes all data and code to recreate all the figures from the "The consistency of prior movements shapes locomotor use-dependent learning."
+This repository includes all data and code used in all analyses and figures from "The consistency of prior movements shapes locomotor use-dependent learning."
 
 In addition, it includes the labratory log which provides some basic information for all the testing sessions.
 
@@ -8,7 +8,7 @@ There is also a link to stage 1 of the registered report.
 ## Code and Data folders
 There are three primary scrips that can be used to reproduce all data and analyses from the eNeuro paper: 
 
-### 1. Inidividual analysis 
+### 1. Individual analysis 
 This script is housed in the individual analysis folder and is named "UDLV_IndividualAnalysis.m"  
 
 The purpose of this script is to:
